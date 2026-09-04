@@ -156,6 +156,15 @@ body,
   to   { clip-path: inset(100% 0 0 0); }
 }
 
+/* System status indicator — breathing "live" dot */
+@keyframes nx-status-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  50%      { opacity: 0.35; box-shadow: 0 0 6px 1px currentColor; }
+}
+.nx-status-pulse {
+  animation: nx-status-pulse 1.6s ease-in-out infinite;
+}
+
 /* Terminal boot log — blinking cursor on the actively-typing line */
 @keyframes nx-cursor-blink {
   0%, 50% { opacity: 1; }

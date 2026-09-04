@@ -90,10 +90,24 @@ function TopNav() {
 }
 
 function TerminalHeader() {
+  const auth = useAuth();
+  const isLoggedIn = Boolean(auth.token);
+  const statusColor = isLoggedIn ? "#ffb000" : "#666";
+  const statusLabel = isLoggedIn ? "[SYS_STATUS: ACTIVE]" : "[SYS_STATUS: STANDBY]";
+
   return (
     <div className="content-stretch flex gap-[16px] items-center relative shrink-0" data-name="terminal-header">
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap">[SYS_STATUS: ACTIVE]</p>
-      <div className="bg-[#ffb000] relative shrink-0 size-[4px]" data-name="Rectangle" />
+      <p
+        className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[12px] whitespace-nowrap"
+        style={{ color: statusColor }}
+      >
+        {statusLabel}
+      </p>
+      <div
+        className="nx-status-pulse relative shrink-0 size-[4px]"
+        style={{ backgroundColor: statusColor, color: statusColor }}
+        data-name="Rectangle"
+      />
       <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">{`LOC // SEC_GRID_7`}</p>
     </div>
   );
