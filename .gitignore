@@ -18,7 +18,6 @@ logs/
 # beside it.
 /.plugins/
 /.opencode-skills/
-/.figma/
 
 # Orphaned duplicate of src/imports/ — nothing in src/ references it.
 /imports/

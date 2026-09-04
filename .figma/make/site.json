@@ -1,0 +1,10 @@
+{
+  "description": "Easily customize screen transitions and animations to enhance user experience, perfect for developers and designers seeking to create engaging applications.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
