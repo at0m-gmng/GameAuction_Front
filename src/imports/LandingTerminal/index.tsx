@@ -83,7 +83,6 @@ function TopNav() {
     <div className="bg-[#121212] content-stretch flex h-[80px] items-center justify-between px-[48px] relative shrink-0 w-full" data-name="top-nav">
       <div aria-hidden className="absolute border-[#ffb000] border-b border-solid inset-0 pointer-events-none" />
       <Logo />
-      <NavLinks />
       {auth.token && <UserStatus />}
     </div>
   );
