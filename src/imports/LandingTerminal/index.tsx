@@ -124,7 +124,7 @@ function TerminalHeader() {
         style={{ color: "#ffb000" }}
         data-name="Rectangle"
       />
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">{`LOC // ${locLabel}`}</p>
+      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap">{`LOC // ${locLabel}`}</p>
     </div>
   );
 }
