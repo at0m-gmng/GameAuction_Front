@@ -1,0 +1,198 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: "Unbounded:ExtraBold";
+  font-style: normal;
+  font-weight: 800;
+  src: url("https://static.figma.com/font/Unbounded_wght__1") format("woff2");
+}
+
+@font-face {
+  font-family: "Unbounded:Bold";
+  font-style: normal;
+  font-weight: 700;
+  src: url("https://static.figma.com/font/Unbounded_wght__1") format("woff2");
+}
+
+@font-face {
+  font-family: "Unbounded:Black";
+  font-style: normal;
+  font-weight: 900;
+  src: url("https://static.figma.com/font/Unbounded_wght__1") format("woff2");
+}
+
+@font-face {
+  font-family: "Unbounded:SemiBold";
+  font-style: normal;
+  font-weight: 600;
+  src: url("https://static.figma.com/font/Unbounded_wght__1") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Mono:Regular";
+  font-style: normal;
+  font-weight: 400;
+  src: url("https://static.figma.com/font/GeistMono_wght__1") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Mono:Bold";
+  font-style: normal;
+  font-weight: 700;
+  src: url("https://static.figma.com/font/GeistMono_wght__1") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Mono:ExtraBold";
+  font-style: normal;
+  font-weight: 800;
+  src: url("https://static.figma.com/font/GeistMono_wght__1") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist:Regular";
+  font-style: normal;
+  font-weight: 400;
+  src: url("https://static.figma.com/font/Geist_wght__1") format("woff2");
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Transition keyframes */
+@keyframes nx-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes nx-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes nx-slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@keyframes nx-slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+@keyframes nx-slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes nx-slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+@keyframes nx-slide-in-up {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+@keyframes nx-slide-out-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-100%); }
+}
+@keyframes nx-slide-in-down {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes nx-slide-out-down {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+@keyframes nx-scale-in {
+  from { transform: scale(0.88); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes nx-scale-out {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(1.1); opacity: 0; }
+}
+
+@keyframes nx-glitch-in {
+  0%   { clip-path: inset(40% 0 60% 0); transform: translate(-8px, 4px); opacity: 0; }
+  20%  { clip-path: inset(20% 0 50% 0); transform: translate(6px, -2px); opacity: 0.6; }
+  40%  { clip-path: inset(0% 0 0% 0);   transform: translate(-3px, 1px);  opacity: 0.8; }
+  60%  { clip-path: inset(10% 0 30% 0); transform: translate(4px, -4px); opacity: 0.9; }
+  80%  { clip-path: inset(0% 0 0% 0);   transform: translate(-1px, 0px);  opacity: 0.95; }
+  100% { clip-path: inset(0% 0 0% 0);   transform: translate(0, 0);      opacity: 1; }
+}
+@keyframes nx-glitch-out {
+  0%   { clip-path: inset(0% 0 0% 0);   transform: translate(0, 0);      opacity: 1; }
+  20%  { clip-path: inset(10% 0 30% 0); transform: translate(-4px, 2px); opacity: 0.9; }
+  50%  { clip-path: inset(30% 0 60% 0); transform: translate(8px, -6px); opacity: 0.5; }
+  80%  { clip-path: inset(60% 0 20% 0); transform: translate(-5px, 3px); opacity: 0.2; }
+  100% { clip-path: inset(100% 0 0% 0); transform: translate(0, 0);      opacity: 0; }
+}
+
+@keyframes nx-wipe-in-left {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+@keyframes nx-wipe-out-right {
+  from { clip-path: inset(0 0% 0 0); }
+  to   { clip-path: inset(0 0 0 100%); }
+}
+@keyframes nx-wipe-in-right {
+  from { clip-path: inset(0 0 0 100%); }
+  to   { clip-path: inset(0 0 0 0%); }
+}
+@keyframes nx-wipe-out-left {
+  from { clip-path: inset(0 0% 0 0); }
+  to   { clip-path: inset(0 100% 0 0); }
+}
+@keyframes nx-wipe-in-down {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0% 0); }
+}
+@keyframes nx-wipe-out-up {
+  from { clip-path: inset(0 0 0% 0); }
+  to   { clip-path: inset(100% 0 0 0); }
+}
+
+/* Overlay FX */
+@keyframes nx-scanline-scroll {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100%; }
+}
+
+.nx-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0,0,0,0.25) 3px,
+    rgba(0,0,0,0.25) 4px
+  );
+  z-index: 9998;
+}
+
+.nx-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,176,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,176,0,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 9997;
+}
+
+/* Scrollbar hiding */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,29 @@
+node_modules/
+dist/
+build/
+.cache/
+.env*
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+*-debug.log*
+logs/
+*.log
+.claude-replay.*
+.tmp-*
+
+# Platform-managed agentplat state, not project source. In the
+# client-initiated single-repo workspace layout (make's `Path: "."` spec) the
+# repo root IS the workspace root, so these land inside this repo rather than
+# beside it.
+/.plugins/
+/.opencode-skills/
+/.figma/
+
+# Orphaned duplicate of src/imports/ — nothing in src/ references it.
+/imports/
+
+# Unfinished/superseded Figma Make screens — not wired into App.tsx yet.
+# Only the .tsx is unused; images and svg-paths in the same folders ARE used.
+src/imports/ItemCatalog/index.tsx
+src/imports/LoginRegistration/index.tsx
