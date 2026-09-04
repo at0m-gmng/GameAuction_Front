@@ -8,6 +8,7 @@ interface MeshPoint {
   vy: number;
   renderX: number;
   renderY: number;
+  isAnchor: boolean;
 }
 
 const INTERIOR_POINT_COUNT = 90;
@@ -17,43 +18,44 @@ const MAGNET_RADIUS = 150;
 const MAGNET_PULL = 0.6;
 const EASE = 0.1;
 const LINE_COLOR = "rgba(255, 176, 0, 0.16)";
-const LINE_GLOW = "rgba(255, 176, 0, 0.5)";
-const HOT_LINE_COLOR = "rgba(255, 200, 90, 0.85)";
 const NODE_COLOR = "rgba(255, 176, 0, 0.9)";
 const NODE_GLOW = "rgba(255, 176, 0, 0.9)";
-const NODE_SIZE = 3;
+const NODE_SIZE = 6;
 
 function buildPoints(width: number, height: number): MeshPoint[] {
   const points: MeshPoint[] = [];
 
-  const makePoint = (x: number, y: number, lockX: boolean, lockY: boolean): MeshPoint => ({
+  const makeAnchor = (x: number, y: number): MeshPoint => ({
+    x, y, vx: 0, vy: 0, renderX: x, renderY: y, isAnchor: true,
+  });
+  const makeInterior = (x: number, y: number): MeshPoint => ({
     x,
     y,
-    vx: lockX ? 0 : (Math.random() - 0.5) * DRIFT_SPEED,
-    vy: lockY ? 0 : (Math.random() - 0.5) * DRIFT_SPEED,
+    vx: (Math.random() - 0.5) * DRIFT_SPEED,
+    vy: (Math.random() - 0.5) * DRIFT_SPEED,
     renderX: x,
     renderY: y,
+    isAnchor: false,
   });
 
-  // Border points anchor the mesh to the screen edges so triangulation
-  // doesn't leave empty gaps along the boundary. They only drift along
-  // their own edge, never inward.
+  // Anchor points pin the mesh to the screen edges — fixed in place, not
+  // drawn as nodes — so triangulation reaches the border with no empty gaps.
   const nx = Math.max(2, Math.round(width / BORDER_SPACING));
   const ny = Math.max(2, Math.round(height / BORDER_SPACING));
 
   for (let i = 0; i <= nx; i++) {
     const x = (i / nx) * width;
-    points.push(makePoint(x, 0, false, true));
-    points.push(makePoint(x, height, false, true));
+    points.push(makeAnchor(x, 0));
+    points.push(makeAnchor(x, height));
   }
   for (let i = 1; i < ny; i++) {
     const y = (i / ny) * height;
-    points.push(makePoint(0, y, true, false));
-    points.push(makePoint(width, y, true, false));
+    points.push(makeAnchor(0, y));
+    points.push(makeAnchor(width, y));
   }
 
   for (let i = 0; i < INTERIOR_POINT_COUNT; i++) {
-    points.push(makePoint(Math.random() * width, Math.random() * height, false, false));
+    points.push(makeInterior(Math.random() * width, Math.random() * height));
   }
 
   return points;
@@ -146,10 +148,7 @@ export default function TriangleMeshBackground() {
 
         const triangles = delaunay.triangles;
 
-        // Base mesh — soft neon amber glow on every edge.
-        ctx.save();
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = LINE_GLOW;
+        // Mesh lines — flat, no glow.
         ctx.strokeStyle = LINE_COLOR;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -163,40 +162,15 @@ export default function TriangleMeshBackground() {
           ctx.closePath();
         }
         ctx.stroke();
-        ctx.restore();
 
-        // Hot pass — brighter, wider glow on edges touching a magnetised point.
-        if (hot.size > 0) {
-          ctx.save();
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = HOT_LINE_COLOR;
-          ctx.strokeStyle = HOT_LINE_COLOR;
-          ctx.lineWidth = 1.3;
-          ctx.beginPath();
-          for (let i = 0; i < triangles.length; i += 3) {
-            const ia = triangles[i];
-            const ib = triangles[i + 1];
-            const ic = triangles[i + 2];
-            if (!hot.has(ia) && !hot.has(ib) && !hot.has(ic)) continue;
-            const a = points[ia];
-            const b = points[ib];
-            const c = points[ic];
-            ctx.moveTo(a.renderX, a.renderY);
-            ctx.lineTo(b.renderX, b.renderY);
-            ctx.lineTo(c.renderX, c.renderY);
-            ctx.closePath();
-          }
-          ctx.stroke();
-          ctx.restore();
-        }
-
-        // Node markers — small glowing triangles at every vertex.
+        // Node markers — glowing triangles at every vertex, except anchors.
         ctx.save();
         ctx.fillStyle = NODE_COLOR;
         ctx.shadowBlur = 8;
         ctx.shadowColor = NODE_GLOW;
         points.forEach((p, i) => {
-          const s = hot.has(i) ? NODE_SIZE * 1.8 : NODE_SIZE;
+          if (p.isAnchor) return;
+          const s = hot.has(i) ? NODE_SIZE * 1.5 : NODE_SIZE;
           ctx.beginPath();
           ctx.moveTo(p.renderX, p.renderY - s);
           ctx.lineTo(p.renderX + s * 0.87, p.renderY + s * 0.5);

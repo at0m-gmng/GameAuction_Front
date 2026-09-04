@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/auth";
+import TriangleMeshBackground from "@/components/TriangleMeshBackground";
 import imgAvatar from "./2737e4614601b8c4372249e7a0e7ee82af9b8606.png";
-import imgTerminalBody from "./0407f649d2728e8e9c9a9eaaafb6109d2fb427be.png";
 
 function Logo() {
   return (
@@ -278,9 +278,8 @@ function SystemLogs() {
 function TerminalBody() {
   return (
     <div className="content-stretch flex flex-col gap-[48px] items-center justify-center min-h-[820px] px-[48px] py-[120px] relative shrink-0 w-full" data-name="terminal-body">
-      <div aria-hidden className="absolute inset-0 pointer-events-none">
-        <img alt="" className="absolute max-w-none object-cover size-full" src={imgTerminalBody} />
-        <div className="absolute bg-[rgba(10,10,10,0.85)] inset-0" />
+      <div aria-hidden className="absolute bg-[#0a0a0a] inset-0 pointer-events-none">
+        <TriangleMeshBackground />
       </div>
       <TerminalHeader />
       <HeroTextBlock />
