@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/auth";
+import TriangleMeshBackground from "@/components/TriangleMeshBackground";
 import loginSvgPaths from "@/imports/LoginRegistration/svg-i5tnpjrq0m";
 import type { Page } from "@/lib/navigation";
 
@@ -7,7 +8,13 @@ const svgPaths = loginSvgPaths;
 
 type AuthTab = "login" | "register";
 
-export function InteractiveLogin({ onNavigate }: { onNavigate: (p: Page) => void }) {
+export function InteractiveLogin({
+  onNavigate,
+  onBack,
+}: {
+  onNavigate: (p: Page) => void;
+  onBack: () => void;
+}) {
   const auth = useAuth();
   const [tab, setTab] = useState<AuthTab>("login");
   const [email, setEmail] = useState("");
@@ -83,9 +90,9 @@ export function InteractiveLogin({ onNavigate }: { onNavigate: (p: Page) => void
 
   return (
     <div style={{ width: "100%", minHeight: "100%", position: "relative" }}>
-      {/* Back button */}
+      {/* Back button — returns to whichever screen was actually visited before this one */}
       <button
-        onClick={() => onNavigate("lobbies")}
+        onClick={onBack}
         style={{
           position: "absolute",
           top: 24,
@@ -109,17 +116,14 @@ export function InteractiveLogin({ onNavigate }: { onNavigate: (p: Page) => void
 
       {/* Auth screen — background */}
       <div style={{ width: "100%", minHeight: "100%", background: "#0a0a0a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        {/* Use the imported background image via the original component structure */}
         <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-          <img
-            alt=""
-            src={new URL("../imports/LoginRegistration/756f8e55fb6448a17c688063ae3834bd66622a65.png", import.meta.url).href}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-          />
-          <div style={{ position: "absolute", inset: 0, background: "rgba(10,10,10,0.9)" }} />
+          <TriangleMeshBackground />
         </div>
 
-        <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 32, padding: 80, width: "100%" }}>
+        <div
+          className="px-[16px] py-[32px] sm:px-[80px] sm:py-[80px]"
+          style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 32, width: "100%", boxSizing: "border-box" }}
+        >
           {/* Brand */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
             <div style={{ width: 32, height: 32, background: "#ffb000", borderRadius: 2 }} />
@@ -132,7 +136,7 @@ export function InteractiveLogin({ onNavigate }: { onNavigate: (p: Page) => void
           </div>
 
           {/* Auth card */}
-          <div style={{ position: "relative", width: 480, background: "#121212", border: "1px solid rgba(212,175,55,0.25)" }}>
+          <div className="w-full max-w-[480px]" style={{ position: "relative", background: "#121212", border: "1px solid rgba(212,175,55,0.25)" }}>
             {/* HUD corners */}
             {[
               { top: 0, left: 0, borderTop: "2px solid #ffb000", borderLeft: "2px solid #ffb000" },
@@ -184,7 +188,7 @@ export function InteractiveLogin({ onNavigate }: { onNavigate: (p: Page) => void
             </div>
 
             {/* Form */}
-            <div style={{ padding: 32, display: "flex", flexDirection: "column", gap: 24 }}>
+            <div className="p-[20px] sm:p-[32px]" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               {tab === "login" ? (
                 <>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

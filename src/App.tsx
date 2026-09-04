@@ -15,8 +15,11 @@ export default function App() {
   const [config, setConfig] = useState<AnimConfig>(defaultConfig);
   const [panelOpen, setPanelOpen] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  // Stack of visited pages, current page always last. Ref, not state — it
+  // only needs to be read synchronously by navigate/goBack, never rendered.
+  const historyRef = useRef<Page[]>(["landing"]);
 
-  const navigate = useCallback(
+  const runTransition = useCallback(
     (target: Page) => {
       if (target === page || transitionState !== "idle") return;
       setPendingPage(target);
@@ -34,6 +37,26 @@ export default function App() {
     },
     [page, transitionState, config.duration]
   );
+
+  const navigate = useCallback(
+    (target: Page) => {
+      if (target === page || transitionState !== "idle") return;
+      historyRef.current = [...historyRef.current, target];
+      runTransition(target);
+    },
+    [page, transitionState, runTransition]
+  );
+
+  // Goes to whatever screen was actually visited before this one, instead
+  // of a fixed destination. No-op at the root of the history stack.
+  const goBack = useCallback(() => {
+    if (transitionState !== "idle") return;
+    const hist = historyRef.current;
+    if (hist.length <= 1) return;
+    const newHist = hist.slice(0, -1);
+    historyRef.current = newHist;
+    runTransition(newHist[newHist.length - 1]);
+  }, [transitionState, runTransition]);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
@@ -83,7 +106,7 @@ export default function App() {
         ) : page === "lobbies" ? (
           <InteractiveLobbies onNavigate={navigate} />
         ) : page === "login" ? (
-          <InteractiveLogin onNavigate={navigate} />
+          <InteractiveLogin onNavigate={navigate} onBack={goBack} />
         ) : page === "catalog" ? (
           <InteractiveCatalog onNavigate={navigate} />
         ) : (
