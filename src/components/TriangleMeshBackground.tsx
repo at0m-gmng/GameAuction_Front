@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import Delaunator from "delaunator";
 
-interface MeshPoint {
+export interface MeshPoint {
   x: number;
   y: number;
   vx: number;
@@ -22,7 +22,7 @@ const NODE_COLOR = "rgba(255, 176, 0, 0.9)";
 const NODE_GLOW = "rgba(255, 176, 0, 0.9)";
 const NODE_SIZE = 6;
 
-function buildPoints(width: number, height: number): MeshPoint[] {
+export function buildPoints(width: number, height: number): MeshPoint[] {
   const points: MeshPoint[] = [];
 
   const makeAnchor = (x: number, y: number): MeshPoint => ({
