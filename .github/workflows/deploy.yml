@@ -30,6 +30,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm test
+
       - run: pnpm build
         env:
           FIGMA_PUBLIC_URL: /${{ github.event.repository.name }}
