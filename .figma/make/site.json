@@ -2,7 +2,7 @@
   "title": "Nexus Exchange",
   "description": "Cyberpunk item auction terminal — browse the market, join live bidding lobbies, track your inventory.",
   "robots": {
-    "index": true
+    "index": false
   },
   "accessibility": {
     "addBypassLinks": false,
