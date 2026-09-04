@@ -156,6 +156,15 @@ body,
   to   { clip-path: inset(100% 0 0 0); }
 }
 
+/* Terminal boot log — blinking cursor on the actively-typing line */
+@keyframes nx-cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.nx-log-cursor {
+  animation: nx-cursor-blink 0.8s step-end infinite;
+}
+
 /* Overlay FX */
 @keyframes nx-scanline-scroll {
   from { background-position: 0 0; }

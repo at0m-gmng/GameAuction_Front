@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/auth";
 import imgAvatar from "./2737e4614601b8c4372249e7a0e7ee82af9b8606.png";
 import imgTerminalBody from "./0407f649d2728e8e9c9a9eaaafb6109d2fb427be.png";
@@ -162,17 +163,84 @@ function HudCorner3() {
   );
 }
 
+const SYSTEM_LOG_LINES: { text: string; color: string }[] = [
+  { text: ">> CONNECTING TO MATRIX DEPLOYMENT SITE...", color: "#ffb000" },
+  { text: ">> HANDSHAKE COMPLETED. 48 LOBBIES ACTIVE.", color: "#e0e0e0" },
+  { text: ">> ENCRYPTION SCHEME: DEUS-EX-CHIPHER-7000", color: "#888" },
+  { text: ">> AUTHENTICATING NODE... OK", color: "#e0e0e0" },
+  { text: ">> SYNCING PRICE FEED WITH GLOBAL MARKET", color: "#888" },
+  { text: ">> LOADING ITEM REGISTRY: 12,480 ENTRIES", color: "#e0e0e0" },
+  { text: ">> SCANNING FOR ACTIVE BIDDERS...", color: "#888" },
+  { text: ">> FIREWALL STATUS: NOMINAL", color: "#ffb000" },
+  { text: ">> LATENCY: 12MS // UPLINK STABLE", color: "#e0e0e0" },
+  { text: ">> WELCOME, OPERATOR. THE GRID AWAITS.", color: "#ffb000" },
+];
+
+const LOG_LINE_DURATION_MS = 1000;
+const LOG_VISIBLE_LINES = 3;
+
 function SystemLogs() {
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (lineIndex >= SYSTEM_LOG_LINES.length) return;
+
+    const fullText = SYSTEM_LOG_LINES[lineIndex].text;
+    const tickMs = LOG_LINE_DURATION_MS / fullText.length;
+
+    if (charCount >= fullText.length) {
+      const next = setTimeout(() => {
+        setLineIndex((i) => i + 1);
+        setCharCount(0);
+      }, tickMs);
+      return () => clearTimeout(next);
+    }
+
+    const tick = setTimeout(() => setCharCount((c) => c + 1), tickMs);
+    return () => clearTimeout(tick);
+  }, [lineIndex, charCount]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [lineIndex, charCount]);
+
+  const completedLines = SYSTEM_LOG_LINES.slice(0, lineIndex);
+  const typingLine = SYSTEM_LOG_LINES[lineIndex];
+
   return (
-    <div className="bg-[#121212] content-stretch flex flex-col gap-[8px] items-start p-[24px] relative shrink-0 w-[600px]" data-name="system-logs">
+    <div className="bg-[#121212] content-stretch flex flex-col items-start p-[24px] relative shrink-0 w-[600px]" data-name="system-logs">
       <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none" />
       <HudCorner />
       <HudCorner1 />
       <HudCorner2 />
       <HudCorner3 />
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] min-w-full relative shrink-0 text-[#ffb000] text-[11px] w-[min-content]">{`>> CONNECTING TO MATRIX DEPLOYMENT SITE...`}</p>
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] min-w-full relative shrink-0 text-[#e0e0e0] text-[11px] w-[min-content]">{`>> HANDSHAKE COMPLETED. 48 LOBBIES ACTIVE.`}</p>
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] min-w-full relative shrink-0 text-[#888] text-[11px] w-[min-content]">{`>> ENCRYPTION SCHEME: DEUS-EX-CHIPHER-7000`}</p>
+      <div
+        ref={scrollRef}
+        className="flex flex-col gap-[8px] w-full overflow-y-hidden"
+        style={{ maxHeight: `${LOG_VISIBLE_LINES * 21}px` }}
+      >
+        {completedLines.map((line, i) => (
+          <p
+            key={i}
+            className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] min-w-full shrink-0 text-[11px] w-[min-content]"
+            style={{ color: line.color }}
+          >
+            {line.text}
+          </p>
+        ))}
+        {typingLine && (
+          <p
+            className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] min-w-full shrink-0 text-[11px] w-[min-content]"
+            style={{ color: typingLine.color }}
+          >
+            {typingLine.text.slice(0, charCount)}
+            <span className="nx-log-cursor">▍</span>
+          </p>
+        )}
+      </div>
     </div>
   );
 }
