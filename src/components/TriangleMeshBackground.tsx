@@ -108,6 +108,15 @@ export default function TriangleMeshBackground() {
     const handleMouseLeave = () => {
       mouse = null;
     };
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      mouse = { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    };
+    const handleTouchEnd = () => {
+      mouse = null;
+    };
 
     const tick = () => {
       ctx.clearRect(0, 0, width, height);
@@ -123,7 +132,7 @@ export default function TriangleMeshBackground() {
         let targetX = p.x;
         let targetY = p.y;
 
-        if (mouse) {
+        if (mouse && !p.isAnchor) {
           const dx = mouse.x - p.renderX;
           const dy = mouse.y - p.renderY;
           const dist = Math.hypot(dx, dy);
@@ -195,6 +204,9 @@ export default function TriangleMeshBackground() {
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("touchcancel", handleTouchEnd);
     animationFrame = requestAnimationFrame(tick);
 
     return () => {
@@ -203,6 +215,9 @@ export default function TriangleMeshBackground() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchEnd);
     };
   }, []);
 
