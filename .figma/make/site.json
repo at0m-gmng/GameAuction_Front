@@ -1,7 +1,8 @@
 {
-  "description": "Easily customize screen transitions and animations to enhance user experience, perfect for developers and designers seeking to create engaging applications.",
+  "title": "Nexus Exchange",
+  "description": "Cyberpunk item auction terminal — browse the market, join live bidding lobbies, track your inventory.",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
     "addBypassLinks": false,
