@@ -92,23 +92,39 @@ function TopNav() {
 function TerminalHeader() {
   const auth = useAuth();
   const isLoggedIn = Boolean(auth.token);
-  const statusColor = isLoggedIn ? "#ffb000" : "#666";
-  const statusLabel = isLoggedIn ? "[SYS_STATUS: ACTIVE]" : "[SYS_STATUS: STANDBY]";
+  const statusWord = isLoggedIn ? "ACTIVE" : "STANDBY";
+  const statusWordColor = isLoggedIn ? "#ffb000" : "#666";
+  const [locLabel, setLocLabel] = useState("SEC_GRID_7");
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("https://ipwho.is/")
+      .then((res) => res.json())
+      .then((data: { success?: boolean; city?: string }) => {
+        if (cancelled || !data.success || !data.city) return;
+        setLocLabel(data.city.toUpperCase().replace(/\s+/g, "_"));
+      })
+      .catch(() => {
+        // Keep the SEC_GRID_7 fallback — this is decorative, not critical.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="content-stretch flex gap-[16px] items-center relative shrink-0" data-name="terminal-header">
       <p
-        className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[12px] whitespace-nowrap"
-        style={{ color: statusColor }}
+        className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap"
       >
-        {statusLabel}
+        [SYS_STATUS: <span style={{ color: statusWordColor }}>{statusWord}</span>]
       </p>
       <div
         className="nx-status-pulse bg-[#ffb000] relative shrink-0 size-[4px]"
         style={{ color: "#ffb000" }}
         data-name="Rectangle"
       />
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">{`LOC // SEC_GRID_7`}</p>
+      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">{`LOC // ${locLabel}`}</p>
     </div>
   );
 }
