@@ -81,7 +81,7 @@ function UserStatus() {
 function TopNav() {
   const auth = useAuth();
   return (
-    <div className="bg-[#121212] content-stretch flex h-[80px] items-center justify-between px-[48px] relative shrink-0 w-full" data-name="top-nav">
+    <div className="bg-[#121212] content-stretch flex h-[80px] items-center justify-between gap-[12px] px-[16px] sm:px-[48px] relative shrink-0 w-full" data-name="top-nav">
       <div aria-hidden className="absolute border-[#ffb000] border-b border-solid inset-0 pointer-events-none" />
       <Logo />
       {auth.token && <UserStatus />}
@@ -113,7 +113,7 @@ function TerminalHeader() {
   }, []);
 
   return (
-    <div className="content-stretch flex gap-[16px] items-center relative shrink-0" data-name="terminal-header">
+    <div className="content-stretch flex flex-wrap gap-[10px_16px] items-center justify-center relative shrink-0" data-name="terminal-header">
       <p
         className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap"
       >
@@ -130,15 +130,15 @@ function TerminalHeader() {
 }
 
 function GlowAccentLine() {
-  return <div className="bg-[#ffb000] h-[2px] relative shrink-0 w-[480px]" data-name="glow-accent-line" />;
+  return <div className="bg-[#ffb000] h-[2px] relative shrink-0 w-full max-w-[480px]" data-name="glow-accent-line" />;
 }
 
 function HeroTextBlock() {
   return (
-    <div className="content-stretch flex flex-col gap-[16px] items-center relative shrink-0 w-[800px]" data-name="hero-text-block">
-      <p className="[word-break:break-word] font-['Unbounded:Black',sans-serif] font-black leading-[1.05] min-w-full relative shrink-0 text-[#ffb000] text-[72px] text-center w-[min-content]">NEXUS EXCHANGE</p>
+    <div className="content-stretch flex flex-col gap-[16px] items-center relative shrink-0 w-full max-w-[800px] px-[16px]" data-name="hero-text-block">
+      <p className="[word-break:break-word] font-['Unbounded:Black',sans-serif] font-black leading-[1.05] min-w-full relative shrink-0 text-[#ffb000] text-[40px] sm:text-[56px] md:text-[72px] text-center w-[min-content]">NEXUS EXCHANGE</p>
       <GlowAccentLine />
-      <p className="[word-break:break-word] font-['Unbounded:SemiBold',sans-serif] font-semibold leading-[normal] min-w-full relative shrink-0 text-[#e0e0e0] text-[16px] text-center w-[min-content]">ENTER THE GRID. BID. CONQUER.</p>
+      <p className="[word-break:break-word] font-['Unbounded:SemiBold',sans-serif] font-semibold leading-[normal] min-w-full relative shrink-0 text-[#e0e0e0] text-[13px] sm:text-[16px] text-center w-[min-content]">ENTER THE GRID. BID. CONQUER.</p>
     </div>
   );
 }
@@ -241,7 +241,7 @@ function SystemLogs() {
   const typingLine = SYSTEM_LOG_LINES[lineIndex];
 
   return (
-    <div className="bg-[#121212] content-stretch flex flex-col items-start p-[24px] relative shrink-0 w-[600px]" data-name="system-logs">
+    <div className="bg-[#121212] content-stretch flex flex-col items-start p-[16px] sm:p-[24px] relative shrink-0 w-full max-w-[600px]" data-name="system-logs">
       <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none" />
       <HudCorner />
       <HudCorner1 />
@@ -249,13 +249,13 @@ function SystemLogs() {
       <HudCorner3 />
       <div
         ref={scrollRef}
-        className="flex flex-col gap-[8px] w-full overflow-y-hidden"
+        className="flex flex-col gap-[8px] w-full overflow-y-hidden overflow-x-hidden"
         style={{ maxHeight: `${LOG_VISIBLE_LINES * 21}px` }}
       >
         {completedLines.map((line, i) => (
           <p
             key={i}
-            className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] min-w-full shrink-0 text-[11px] w-[min-content]"
+            className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] shrink-0 text-[10px] sm:text-[11px] w-full"
             style={{ color: line.color }}
           >
             {line.text}
@@ -263,7 +263,7 @@ function SystemLogs() {
         ))}
         {typingLine && (
           <p
-            className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] min-w-full shrink-0 text-[11px] w-[min-content]"
+            className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] shrink-0 text-[10px] sm:text-[11px] w-full"
             style={{ color: typingLine.color }}
           >
             {typingLine.text.slice(0, charCount)}
@@ -277,7 +277,7 @@ function SystemLogs() {
 
 function TerminalBody() {
   return (
-    <div className="content-stretch flex flex-col gap-[48px] items-center justify-center min-h-[820px] px-[48px] py-[120px] relative shrink-0 w-full" data-name="terminal-body">
+    <div className="content-stretch flex flex-col gap-[32px] sm:gap-[48px] items-center justify-center min-h-[820px] px-[16px] sm:px-[48px] py-[64px] sm:py-[120px] relative shrink-0 w-full" data-name="terminal-body">
       <div aria-hidden className="absolute bg-[#0a0a0a] inset-0 pointer-events-none">
         <TriangleMeshBackground />
       </div>
