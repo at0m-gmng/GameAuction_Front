@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth";
 import imgAvatar from "./9a7d478e0e0227e5d266fdfaedf3592e80c10ddc.png";
 import imgThumb from "./492a36d693a9b0c3bd7546ee265678018f3ef48b.png";
 import imgThumb1 from "./8ac53f856ca61df443d3fdc23615e1ec9dc6b8b4.png";
@@ -81,12 +82,13 @@ function UserStatus() {
 }
 
 function TopNav() {
+  const auth = useAuth();
   return (
     <div className="bg-[#121212] content-stretch flex h-[80px] items-center justify-between px-[48px] relative shrink-0 w-full" data-name="top-nav">
       <div aria-hidden className="absolute border-[#ffb000] border-b border-solid inset-0 pointer-events-none" />
       <Logo />
       <NavLinks />
-      <UserStatus />
+      {auth.token && <UserStatus />}
     </div>
   );
 }

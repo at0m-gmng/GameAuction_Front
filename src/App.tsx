@@ -693,13 +693,15 @@ export default function App() {
         )}
       </div>
 
-      {/* Animation panel */}
-      <AnimPanel
-        config={config}
-        onChange={(patch) => setConfig((c) => ({ ...c, ...patch }))}
-        open={panelOpen}
-        onToggle={() => setPanelOpen((o) => !o)}
-      />
+      {/* Animation panel — dev only, disabled in production builds */}
+      {import.meta.env.DEV && (
+        <AnimPanel
+          config={config}
+          onChange={(patch) => setConfig((c) => ({ ...c, ...patch }))}
+          open={panelOpen}
+          onToggle={() => setPanelOpen((o) => !o)}
+        />
+      )}
     </div>
   );
 }
@@ -718,8 +720,8 @@ function InteractiveLanding({ onNavigate }: { onNavigate: (p: Page) => void }) {
       if (text === "CATALOG") { e.preventDefault(); e.stopPropagation(); onNavigate("catalog"); }
       else if (text === "LOBBIES") { e.preventDefault(); e.stopPropagation(); onNavigate("lobbies"); }
       else if (text === "PROFILE") { e.preventDefault(); e.stopPropagation(); onNavigate("profile"); }
-      else if (text === "JOIN LOBBY") { e.preventDefault(); e.stopPropagation(); onNavigate("lobbies"); }
       else if (text === "BROWSE CATALOG") { e.preventDefault(); e.stopPropagation(); onNavigate("catalog"); }
+      else if (text === "LOGIN / REGISTER") { e.preventDefault(); e.stopPropagation(); onNavigate("login"); }
     };
 
     el.addEventListener("click", handler, true);

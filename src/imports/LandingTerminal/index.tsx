@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth";
 import imgAvatar from "./2737e4614601b8c4372249e7a0e7ee82af9b8606.png";
 import imgTerminalBody from "./0407f649d2728e8e9c9a9eaaafb6109d2fb427be.png";
 
@@ -77,12 +78,13 @@ function UserStatus() {
 }
 
 function TopNav() {
+  const auth = useAuth();
   return (
     <div className="bg-[#121212] content-stretch flex h-[80px] items-center justify-between px-[48px] relative shrink-0 w-full" data-name="top-nav">
       <div aria-hidden className="absolute border-[#ffb000] border-b border-solid inset-0 pointer-events-none" />
       <Logo />
       <NavLinks />
-      <UserStatus />
+      {auth.token && <UserStatus />}
     </div>
   );
 }
@@ -111,29 +113,20 @@ function HeroTextBlock() {
   );
 }
 
-function ButtonTerminal() {
+function ButtonTerminal({ label }: { label: string }) {
   return (
     <div className="bg-[#ffb000] content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0" data-name="button-terminal">
       <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[12px] uppercase whitespace-nowrap">BROWSE CATALOG</p>
-    </div>
-  );
-}
-
-function ButtonTerminal1() {
-  return (
-    <div className="bg-[rgba(0,0,0,0)] content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0" data-name="button-terminal">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] uppercase whitespace-nowrap">JOIN LOBBY</p>
+      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[12px] uppercase whitespace-nowrap">{label}</p>
     </div>
   );
 }
 
 function CtaBlock() {
+  const auth = useAuth();
   return (
     <div className="content-stretch flex gap-[24px] items-start justify-center relative shrink-0" data-name="cta-block">
-      <ButtonTerminal />
-      <ButtonTerminal1 />
+      {auth.token ? <ButtonTerminal label="BROWSE CATALOG" /> : <ButtonTerminal label="LOGIN / REGISTER" />}
     </div>
   );
 }
