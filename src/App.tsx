@@ -8,8 +8,19 @@ import { InteractiveProfile } from "@/screens/Profile";
 import type { Page } from "@/lib/navigation";
 import { type AnimConfig, type TransitionState, defaultConfig, getAnimationNames } from "@/lib/transitions";
 
+// NOTE: sessionStorage, not localStorage — a refresh should keep you where
+// you were, but reopening the app days later should still start at the
+// marketing landing page, not silently resume some old session.
+const PAGE_STORAGE_KEY = "nexus_page";
+const VALID_PAGES: readonly Page[] = ["landing", "lobbies", "login", "catalog", "profile"];
+
+function getPersistedPage(): Page {
+  const stored = sessionStorage.getItem(PAGE_STORAGE_KEY);
+  return (VALID_PAGES as readonly string[]).includes(stored ?? "") ? (stored as Page) : "landing";
+}
+
 export default function App() {
-  const [page, setPage] = useState<Page>("landing");
+  const [page, setPage] = useState<Page>(getPersistedPage);
   const [pendingPage, setPendingPage] = useState<Page | null>(null);
   const [transitionState, setTransitionState] = useState<TransitionState>("idle");
   const [config, setConfig] = useState<AnimConfig>(defaultConfig);
@@ -17,7 +28,9 @@ export default function App() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   // Stack of visited pages, current page always last. Ref, not state — it
   // only needs to be read synchronously by navigate/goBack, never rendered.
-  const historyRef = useRef<Page[]>(["landing"]);
+  // Restoring a refresh starts a fresh stack at the restored page rather
+  // than reconstructing prior history, which isn't persisted.
+  const historyRef = useRef<Page[]>([page]);
 
   const runTransition = useCallback(
     (target: Page) => {
@@ -59,6 +72,10 @@ export default function App() {
   }, [transitionState, runTransition]);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
+
+  useEffect(() => {
+    sessionStorage.setItem(PAGE_STORAGE_KEY, page);
+  }, [page]);
 
   const { enter, exit } = getAnimationNames(config.transition, config.direction);
 

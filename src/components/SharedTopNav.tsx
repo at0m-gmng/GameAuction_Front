@@ -24,13 +24,11 @@ export function SharedTopNav({
   const auth = useAuth();
   const isLoggedIn = Boolean(auth.token);
 
+  // Clicking your own account badge opens your profile — the standard web
+  // convention. Logging out is a separate, deliberate action that lives on
+  // the profile screen itself, not hidden behind this same click target.
   const handleAccountClick = () => {
-    if (isLoggedIn) {
-      auth.logout();
-      onNavigate("landing");
-    } else {
-      onNavigate("login");
-    }
+    onNavigate(isLoggedIn ? "profile" : "login");
   };
 
   const navItems: { label: string; page: Page }[] = [
@@ -120,7 +118,7 @@ export function SharedTopNav({
           )}
           <button
             onClick={handleAccountClick}
-            title={isLoggedIn ? "Log out" : "Log in"}
+            title={isLoggedIn ? "View profile" : "Log in"}
             style={{ display: "flex", gap: 8, alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none" }}
           >
             <img

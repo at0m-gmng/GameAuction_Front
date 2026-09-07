@@ -119,17 +119,39 @@ function StatBlockContainer() {
   );
 }
 
-function OperatorDetails({ data }: { data: ProfileData }) {
+function LogoutButton({ onLogout }: { onLogout: () => void }) {
+  return (
+    <button
+      onClick={onLogout}
+      style={{
+        background: "none",
+        border: "1px solid rgba(255,60,60,0.4)",
+        borderRadius: 2,
+        padding: "8px 14px",
+        cursor: "pointer",
+        outline: "none",
+        flexShrink: 0,
+      }}
+    >
+      <span style={{ fontFamily: "'Geist Mono:Bold', sans-serif", fontWeight: 700, fontSize: 10, color: "#ff6060", letterSpacing: 1 }}>
+        LOG OUT
+      </span>
+    </button>
+  );
+}
+
+function OperatorDetails({ data, onLogout }: { data: ProfileData; onLogout: () => void }) {
   return (
     <div className="content-stretch flex gap-[32px] items-center relative shrink-0 w-full" data-name="operator-details">
       <AvatarHexFrame />
       <IdentityBlock data={data} />
       <StatBlockContainer />
+      <LogoutButton onLogout={onLogout} />
     </div>
   );
 }
 
-function ProfileSummary({ data }: { data: ProfileData }) {
+function ProfileSummary({ data, onLogout }: { data: ProfileData; onLogout: () => void }) {
   return (
     <div className="bg-[#121212] content-stretch flex flex-col gap-[24px] items-start p-[32px] relative shrink-0 w-full" data-name="profile-summary">
       <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none" />
@@ -137,7 +159,7 @@ function ProfileSummary({ data }: { data: ProfileData }) {
       <HudCorner1 />
       <HudCorner2 />
       <HudCorner3 />
-      <OperatorDetails data={data} />
+      <OperatorDetails data={data} onLogout={onLogout} />
     </div>
   );
 }
@@ -296,14 +318,16 @@ function ProfileBody({
   data,
   inventory,
   isInventoryLoading,
+  onLogout,
 }: {
   data: ProfileData;
   inventory: ProfileInventoryItem[];
   isInventoryLoading: boolean;
+  onLogout: () => void;
 }) {
   return (
     <div className="content-stretch flex flex-col gap-[32px] items-start p-[48px] relative shrink-0 w-full" data-name="profile-body">
-      <ProfileSummary data={data} />
+      <ProfileSummary data={data} onLogout={onLogout} />
       <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} />
     </div>
   );
@@ -319,14 +343,16 @@ export default function ProfileInventory({
   data = DEFAULT_PROFILE_DATA,
   inventory = [],
   isInventoryLoading = false,
+  onLogout = () => {},
 }: {
   data?: ProfileData;
   inventory?: ProfileInventoryItem[];
   isInventoryLoading?: boolean;
+  onLogout?: () => void;
 }) {
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative size-full" data-name="profile-inventory">
-      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} />
+      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} onLogout={onLogout} />
     </div>
   );
 }

@@ -32,8 +32,12 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
       .then((data) => {
         if (!cancelled) setInventory(data);
       })
-      .catch(() => {
-        // Network hiccup or expired token — leave inventory empty rather than crash.
+      .catch((error: unknown) => {
+        // Network hiccup, CORS, or expired token — leave inventory empty
+        // rather than crash, but log it: a silently-empty inventory with no
+        // trace anywhere was exactly what made a real bug look like "the
+        // gift just isn't there".
+        if (!cancelled) console.error("Failed to load inventory:", error);
       })
       .finally(() => {
         if (!cancelled) setIsInventoryLoading(false);
@@ -64,7 +68,15 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
           </p>
         </div>
       )}
-      <ProfileInventory data={profile ?? undefined} inventory={inventory} isInventoryLoading={isInventoryLoading} />
+      <ProfileInventory
+        data={profile ?? undefined}
+        inventory={inventory}
+        isInventoryLoading={isInventoryLoading}
+        onLogout={() => {
+          auth.logout();
+          onNavigate("landing");
+        }}
+      />
     </div>
   );
 }
