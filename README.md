@@ -37,10 +37,3 @@ pnpm build
 Базовые URL заданы в [`src/lib/config.ts`](src/lib/config.ts) (Identity.API, Catalog.API). CORS на бэкенде разрешает только `https://at0m-gmng.github.io` — локальный `pnpm dev` не сможет достучаться до задеплоенных сервисов напрямую из браузера.
 
 Реально подключены к бэкенду: регистрация/вход и профиль ([`src/auth.tsx`](src/auth.tsx)), инвентарь на экране профиля ([`src/screens/Profile.tsx`](src/screens/Profile.tsx)). Экраны Catalog и Lobbies пока рисуют захардкоженные моковые данные — Lobby.API и генерация публичного каталога на бэкенде ещё не подключены (см. README бэкенда).
-
-## Структура
-
-- `src/App.tsx` — основное приложение, навигация между экранами
-- `src/auth.tsx` — аутентификация (JWT), профиль игрока
-- `src/screens/` — экраны с реальной логикой (Profile, Catalog, Lobbies, Login)
-- `src/imports/` — визуальные компоненты, экспортированные из Figma Make
