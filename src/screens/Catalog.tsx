@@ -116,8 +116,7 @@ export function InteractiveCatalog({ onNavigate }: { onNavigate: (p: Page) => vo
           {visible.map((item) => (
             <div
               key={item.name}
-              style={{ background: "#121212", border: "1px solid #2a2a2a", display: "flex", flexDirection: "column", cursor: "pointer" }}
-              onClick={() => onNavigate("login")}
+              style={{ background: "#121212", border: "1px solid #2a2a2a", display: "flex", flexDirection: "column" }}
             >
               <div style={{ height: 200, overflow: "hidden", position: "relative" }}>
                 <img
