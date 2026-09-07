@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { IDENTITY_API_BASE_URL } from "@/lib/config";
 
-export const API_BASE_URL = "https://gamebackend-mbqb.onrender.com";
+export const API_BASE_URL = IDENTITY_API_BASE_URL;
 
 const TOKEN_KEY = "nexus_token";
 

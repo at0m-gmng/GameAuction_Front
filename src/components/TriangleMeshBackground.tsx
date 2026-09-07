@@ -201,7 +201,22 @@ export default function TriangleMeshBackground() {
     // width. A setTimeout(0) runs after that CSS is applied.
     const initialMeasure = setTimeout(handleResize, 0);
 
-    window.addEventListener("resize", handleResize);
+    // ResizeObserver, not window "resize": the canvas sets explicit pixel
+    // style.width/height (needed for devicePixelRatio scaling), which
+    // overrides the "inset-0" CSS auto-stretch. Browser zoom changes the
+    // parent's rendered size without reliably firing a window resize event,
+    // so without this the canvas is left at its last measured size and the
+    // page behind it shows through below it. ResizeObserver fires on any
+    // actual size change of the observed element — cheap, event-driven, not
+    // a polling loop — and fully covers window-resize too.
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width: w, height: h } = entry.contentRect;
+      setup(w, h);
+    });
+    resizeObserver.observe(parent);
+
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
@@ -212,7 +227,7 @@ export default function TriangleMeshBackground() {
     return () => {
       clearTimeout(initialMeasure);
       cancelAnimationFrame(animationFrame);
-      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("touchmove", handleTouchMove);

@@ -1,16 +1,47 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/auth";
+import { SharedTopNav } from "@/components/SharedTopNav";
+import { CATALOG_API_BASE_URL } from "@/lib/config";
 import { formatBalance, formatMemberSince } from "@/lib/format";
 import type { Page } from "@/lib/navigation";
-import ProfileInventory from "@/imports/ProfileInventory/index";
+import ProfileInventory, { type ProfileInventoryItem } from "@/imports/ProfileInventory/index";
 
 export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => void }) {
   const auth = useAuth();
-  const ref = useRef<HTMLDivElement>(null);
+  const [inventory, setInventory] = useState<ProfileInventoryItem[]>([]);
+  const [isInventoryLoading, setIsInventoryLoading] = useState(false);
 
   useEffect(() => {
     if (!auth.token) onNavigate("login");
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth.token]);
+
+  useEffect(() => {
+    if (!auth.token) {
+      setInventory([]);
+      return;
+    }
+
+    let cancelled = false;
+    setIsInventoryLoading(true);
+
+    fetch(`${CATALOG_API_BASE_URL}/api/catalog/inventory`, {
+      headers: { Authorization: `Bearer ${auth.token}` },
+    })
+      .then((response) => (response.ok ? (response.json() as Promise<ProfileInventoryItem[]>) : Promise.reject(response)))
+      .then((data) => {
+        if (!cancelled) setInventory(data);
+      })
+      .catch(() => {
+        // Network hiccup or expired token — leave inventory empty rather than crash.
+      })
+      .finally(() => {
+        if (!cancelled) setIsInventoryLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [auth.token]);
 
   const loadError = !auth.token ? false : !auth.isProfileLoading && !auth.profile;
@@ -23,22 +54,9 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
       }
     : null;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const handler = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const text = target.textContent?.trim().toUpperCase() ?? "";
-      if (text === "CATALOG") { e.preventDefault(); e.stopPropagation(); onNavigate("catalog"); }
-      else if (text === "LOBBIES") { e.preventDefault(); e.stopPropagation(); onNavigate("lobbies"); }
-      else if (text === "PROFILE") { e.preventDefault(); e.stopPropagation(); onNavigate("profile"); }
-    };
-    el.addEventListener("click", handler, true);
-    return () => el.removeEventListener("click", handler, true);
-  }, [onNavigate]);
-
   return (
-    <div ref={ref} style={{ width: "100%", minHeight: "100%" }}>
+    <div style={{ width: "100%", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+      <SharedTopNav active="profile" onNavigate={onNavigate} />
       {loadError && (
         <div style={{ padding: 16, background: "rgba(255,0,0,0.05)", border: "1px solid rgba(255,60,60,0.4)", margin: 24 }}>
           <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#ff6060" }}>
@@ -46,7 +64,7 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
           </p>
         </div>
       )}
-      <ProfileInventory data={profile ?? undefined} />
+      <ProfileInventory data={profile ?? undefined} inventory={inventory} isInventoryLoading={isInventoryLoading} />
     </div>
   );
 }

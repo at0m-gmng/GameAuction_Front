@@ -61,6 +61,16 @@ body,
 #root {
   height: 100%;
   overflow: hidden;
+  /* Safety net, not a fix for one screen: #root stretches to the full
+     (post-zoom) viewport, but individual screens size themselves by content
+     (e.g. Landing's min-h-[820px]) and don't grow to match. Without this,
+     any gap between the two shows the browser's default white canvas —
+     and the .nx-scanlines overlay (which does cover the full #root) paints
+     its stripe pattern over that white gap, looking exactly like the
+     reported bug. A theme-colored background here means any such gap,
+     on any screen, now or in the future, reads as "background", not "bug".
+     Zero runtime cost — it's a static color, not a per-frame computation. */
+  background-color: #0a0a0a;
 }
 
 /* Transition keyframes */

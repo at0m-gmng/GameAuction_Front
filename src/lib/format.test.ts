@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatBalance, formatMemberSince } from "./format";
+import { formatAcquiredDate, formatBalance, formatCategoryLabel, formatMemberSince, formatRarityLabel, rarityColors } from "./format";
 
 describe("formatBalance", () => {
   it("formats a whole number with thousands separators and the credit symbol", () => {
@@ -20,5 +20,44 @@ describe("formatMemberSince", () => {
     // 2026-01-01T00:30 UTC could roll back a day/month in some local
     // timezones — must stay January in the label regardless.
     expect(formatMemberSince("2026-01-01T00:30:00Z")).toBe("MEMBER SINCE // JAN_2026");
+  });
+});
+
+describe("formatAcquiredDate", () => {
+  it("formats an ISO date as zero-padded MM.DD", () => {
+    expect(formatAcquiredDate("2026-01-05T10:00:00Z")).toBe("ACQUIRED // 01.05");
+  });
+});
+
+describe("formatRarityLabel", () => {
+  it.each([
+    [100, "COMMON"],
+    [200, "RARE"],
+    [300, "EPIC"],
+    [400, "LEGENDARY"],
+    [999, "UNKNOWN"],
+  ])("maps rarity %i to %s", (rarity, label) => {
+    expect(formatRarityLabel(rarity)).toBe(label);
+  });
+});
+
+describe("formatCategoryLabel", () => {
+  it.each([
+    [100, "WEAPONS"],
+    [200, "ARMOR"],
+    [300, "TECH"],
+    [999, "UNKNOWN"],
+  ])("maps category %i to %s", (category, label) => {
+    expect(formatCategoryLabel(category)).toBe(label);
+  });
+});
+
+describe("rarityColors", () => {
+  it("gives Legendary the gold accent color", () => {
+    expect(rarityColors(400).color).toBe("#ffb000");
+  });
+
+  it("falls back to a neutral color for unknown rarities", () => {
+    expect(rarityColors(999).color).toBe("#888");
   });
 });
