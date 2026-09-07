@@ -1,4 +1,5 @@
-import { formatAcquiredDate, formatBalance, formatRarityLabel, rarityColors } from "@/lib/format";
+import { useState } from "react";
+import { formatAcquiredDate, formatBalance, formatCategoryLabel, formatRarityLabel, rarityColors } from "@/lib/format";
 import imgAvatar from "./2737e4614601b8c4372249e7a0e7ee82af9b8606.png";
 
 export interface ProfileData {
@@ -119,39 +120,17 @@ function StatBlockContainer() {
   );
 }
 
-function LogoutButton({ onLogout }: { onLogout: () => void }) {
-  return (
-    <button
-      onClick={onLogout}
-      style={{
-        background: "none",
-        border: "1px solid rgba(255,60,60,0.4)",
-        borderRadius: 2,
-        padding: "8px 14px",
-        cursor: "pointer",
-        outline: "none",
-        flexShrink: 0,
-      }}
-    >
-      <span style={{ fontFamily: "'Geist Mono:Bold', sans-serif", fontWeight: 700, fontSize: 10, color: "#ff6060", letterSpacing: 1 }}>
-        LOG OUT
-      </span>
-    </button>
-  );
-}
-
-function OperatorDetails({ data, onLogout }: { data: ProfileData; onLogout: () => void }) {
+function OperatorDetails({ data }: { data: ProfileData }) {
   return (
     <div className="content-stretch flex gap-[32px] items-center relative shrink-0 w-full" data-name="operator-details">
       <AvatarHexFrame />
       <IdentityBlock data={data} />
       <StatBlockContainer />
-      <LogoutButton onLogout={onLogout} />
     </div>
   );
 }
 
-function ProfileSummary({ data, onLogout }: { data: ProfileData; onLogout: () => void }) {
+function ProfileSummary({ data }: { data: ProfileData }) {
   return (
     <div className="bg-[#121212] content-stretch flex flex-col gap-[24px] items-start p-[32px] relative shrink-0 w-full" data-name="profile-summary">
       <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none" />
@@ -159,44 +138,72 @@ function ProfileSummary({ data, onLogout }: { data: ProfileData; onLogout: () =>
       <HudCorner1 />
       <HudCorner2 />
       <HudCorner3 />
-      <OperatorDetails data={data} onLogout={onLogout} />
+      <OperatorDetails data={data} />
     </div>
   );
 }
 
-function Frame3() {
+type CategoryFilter = number | "all";
+
+function FilterTab({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <div className="bg-[#ffb000] content-stretch flex items-start px-[12px] py-[6px] relative rounded-[2px] shrink-0" data-name="Frame">
-      <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[10px] whitespace-nowrap">ALL Rarity</p>
-    </div>
+    <button
+      onClick={onClick}
+      className="content-stretch flex items-start px-[12px] py-[6px] relative rounded-[2px] shrink-0"
+      style={{ background: active ? "#ffb000" : "#121212", border: active ? "none" : "1px solid #2a2a2a", cursor: "pointer", outline: "none" }}
+      data-name="Frame"
+    >
+      <p
+        className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[10px] whitespace-nowrap"
+        style={{ color: active ? "#0a0a0a" : "#e0e0e0" }}
+      >
+        {label}
+      </p>
+    </button>
   );
 }
 
-function Frame4() {
-  return (
-    <div className="bg-[#121212] content-stretch flex items-start px-[12px] py-[6px] relative rounded-[2px] shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#e0e0e0] text-[10px] whitespace-nowrap">Weapons</p>
-    </div>
-  );
-}
-
-function SortingTabs() {
+function SortingTabs({
+  categories,
+  active,
+  onSelect,
+}: {
+  categories: number[];
+  active: CategoryFilter;
+  onSelect: (f: CategoryFilter) => void;
+}) {
   return (
     <div className="content-stretch flex gap-[12px] items-start relative shrink-0" data-name="sorting-tabs">
-      <Frame3 />
-      <Frame4 />
+      <FilterTab label="ALL" active={active === "all"} onClick={() => onSelect("all")} />
+      {categories.map((category) => (
+        <FilterTab
+          key={category}
+          label={formatCategoryLabel(category)}
+          active={active === category}
+          onClick={() => onSelect(category)}
+        />
+      ))}
     </div>
   );
 }
 
-function FilterHeader({ itemCount }: { itemCount: number }) {
+function FilterHeader({
+  itemCount,
+  categories,
+  active,
+  onSelect,
+}: {
+  itemCount: number;
+  categories: number[];
+  active: CategoryFilter;
+  onSelect: (f: CategoryFilter) => void;
+}) {
   return (
     <div className="content-stretch flex items-center justify-between relative shrink-0 w-full" data-name="filter-header">
       <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[16px] whitespace-nowrap">
         {`EQUIPPED SALVAGE (${itemCount} ${itemCount === 1 ? "ITEM" : "ITEMS"})`}
       </p>
-      <SortingTabs />
+      <SortingTabs categories={categories} active={active} onSelect={onSelect} />
     </div>
   );
 }
@@ -272,16 +279,23 @@ function InventoryEmptyState({ label }: { label: string }) {
 }
 
 function InventoryColumn({ items, isLoading }: { items: ProfileInventoryItem[]; isLoading: boolean }) {
+  const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
+
+  const categories = Array.from(new Set(items.map((item) => item.category))).sort((a, b) => a - b);
+  const visible = activeCategory === "all" ? items : items.filter((item) => item.category === activeCategory);
+
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col gap-[24px] items-start min-w-px relative" data-name="inventory-column">
-      <FilterHeader itemCount={items.length} />
+      <FilterHeader itemCount={visible.length} categories={categories} active={activeCategory} onSelect={setActiveCategory} />
       {isLoading ? (
         <InventoryEmptyState label="LOADING INVENTORY..." />
       ) : items.length === 0 ? (
         <InventoryEmptyState label="NO ITEMS IN INVENTORY YET" />
+      ) : visible.length === 0 ? (
+        <InventoryEmptyState label="NO ITEMS IN THIS CATEGORY" />
       ) : (
         <div className="content-start flex flex-wrap gap-[24px] items-start relative shrink-0 w-full" data-name="Frame">
-          {items.map((item) => (
+          {visible.map((item) => (
             <InventoryItemCard key={item.itemId} item={item} />
           ))}
         </div>
@@ -318,16 +332,14 @@ function ProfileBody({
   data,
   inventory,
   isInventoryLoading,
-  onLogout,
 }: {
   data: ProfileData;
   inventory: ProfileInventoryItem[];
   isInventoryLoading: boolean;
-  onLogout: () => void;
 }) {
   return (
     <div className="content-stretch flex flex-col gap-[32px] items-start p-[48px] relative shrink-0 w-full" data-name="profile-body">
-      <ProfileSummary data={data} onLogout={onLogout} />
+      <ProfileSummary data={data} />
       <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} />
     </div>
   );
@@ -343,16 +355,14 @@ export default function ProfileInventory({
   data = DEFAULT_PROFILE_DATA,
   inventory = [],
   isInventoryLoading = false,
-  onLogout = () => {},
 }: {
   data?: ProfileData;
   inventory?: ProfileInventoryItem[];
   isInventoryLoading?: boolean;
-  onLogout?: () => void;
 }) {
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative size-full" data-name="profile-inventory">
-      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} onLogout={onLogout} />
+      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} />
     </div>
   );
 }

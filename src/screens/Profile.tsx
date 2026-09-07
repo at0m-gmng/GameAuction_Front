@@ -72,10 +72,6 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
         data={profile ?? undefined}
         inventory={inventory}
         isInventoryLoading={isInventoryLoading}
-        onLogout={() => {
-          auth.logout();
-          onNavigate("landing");
-        }}
       />
     </div>
   );

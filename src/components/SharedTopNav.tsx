@@ -1,7 +1,6 @@
 import { useAuth } from "@/auth";
 import { formatBalance } from "@/lib/format";
 import type { Page } from "@/lib/navigation";
-import imgCatAvatar from "@/imports/ItemCatalog/30d85ad1fe84d113722360fcbb932c120432dc2a.png";
 
 /**
  * Top navigation bar used across every interactive screen. Renders real
@@ -10,7 +9,7 @@ import imgCatAvatar from "@/imports/ItemCatalog/30d85ad1fe84d113722360fcbb932c12
  *
  * `minimal` renders just the logo (used on Landing, which is the public
  * entry/marketing page and intentionally doesn't expose nav links or the
- * account badge).
+ * account controls).
  */
 export function SharedTopNav({
   active,
@@ -24,11 +23,9 @@ export function SharedTopNav({
   const auth = useAuth();
   const isLoggedIn = Boolean(auth.token);
 
-  // Clicking your own account badge opens your profile — the standard web
-  // convention. Logging out is a separate, deliberate action that lives on
-  // the profile screen itself, not hidden behind this same click target.
-  const handleAccountClick = () => {
-    onNavigate(isLoggedIn ? "profile" : "login");
+  const handleLogout = () => {
+    auth.logout();
+    onNavigate("landing");
   };
 
   const navItems: { label: string; page: Page }[] = [
@@ -52,15 +49,12 @@ export function SharedTopNav({
         zIndex: 10,
       }}
     >
-      <button
-        onClick={() => onNavigate("landing")}
-        style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, outline: "none" }}
-      >
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{ width: 24, height: 24, background: "#ffb000", border: "1px solid #d4af37", borderRadius: 2 }} />
         <span style={{ fontFamily: "'Unbounded:ExtraBold', sans-serif", fontWeight: 800, fontSize: 16, color: "#ffb000" }}>
           NEXUS EXCHANGE
         </span>
-      </button>
+      </div>
 
       {!minimal && (
         <div style={{ display: "flex", gap: 40, alignItems: "center" }}>
@@ -116,20 +110,23 @@ export function SharedTopNav({
               </span>
             </div>
           )}
-          <button
-            onClick={handleAccountClick}
-            title={isLoggedIn ? "View profile" : "Log in"}
-            style={{ display: "flex", gap: 8, alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none" }}
-          >
-            <img
-              src={imgCatAvatar}
-              alt=""
-              style={{ width: 32, height: 32, objectFit: "cover", borderRadius: 4, border: "1px solid #ffb000" }}
-            />
-            <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 12, color: "#e0e0e0" }}>
-              {isLoggedIn ? (auth.profile?.nickname ?? "...") : "GUEST // LOGIN"}
-            </span>
-          </button>
+          {isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "none",
+                border: "1px solid rgba(255,60,60,0.4)",
+                borderRadius: 4,
+                padding: "8px 14px",
+                cursor: "pointer",
+                outline: "none",
+              }}
+            >
+              <span style={{ fontFamily: "'Geist Mono:Bold', sans-serif", fontWeight: 700, fontSize: 10, color: "#ff6060", letterSpacing: 1 }}>
+                LOG OUT
+              </span>
+            </button>
+          )}
         </div>
       )}
     </div>
