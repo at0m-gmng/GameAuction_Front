@@ -36,49 +36,66 @@ const TONE_STYLES: Record<ShowcaseTone, ToneStyle> = {
   },
 };
 
+interface SizeStyle {
+  showcaseSize: number;
+  glowOuter: number;
+  glowInner: number;
+  frameSize: number;
+  headerWidth: number;
+  nameFontSize: number;
+}
+
+const SIZE_STYLES: Record<"large" | "compact", SizeStyle> = {
+  large: { showcaseSize: 320, glowOuter: 480, glowInner: 400, frameSize: 200, headerWidth: 800, nameFontSize: 40 },
+  compact: { showcaseSize: 160, glowOuter: 260, glowInner: 220, frameSize: 120, headerWidth: 480, nameFontSize: 22 },
+};
+
 /**
  * Витрина предмета (свечение, рамка, рарити-бейдж, название) — общий блок,
  * переиспользуемый экраном результата аукциона и экраном выставления на продажу.
  */
 export function ItemShowcase({
   tone,
+  size = "large",
   itemName,
   itemImageUrl,
   badgeLabel,
   subheading,
 }: {
   tone: ShowcaseTone;
+  size?: "large" | "compact";
   itemName: string;
   itemImageUrl: string | null;
   badgeLabel: string;
   subheading?: { text: string; color: string };
 }) {
   const s = TONE_STYLES[tone];
+  const d = SIZE_STYLES[size];
 
   return (
     <>
       <div
-        className="content-stretch flex flex-col h-[320px] items-center justify-center relative shrink-0 w-[680px]"
-        style={s.dimmed ? { opacity: 0.6 } : undefined}
+        className="content-stretch flex flex-col items-center justify-center relative shrink-0"
+        style={{ height: d.showcaseSize, width: d.showcaseSize * 2.125, ...(s.dimmed ? { opacity: 0.6 } : {}) }}
         data-name="result-showcase"
       >
         <div
           className="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2 rounded-full"
           style={{
-            width: s.doubleGlow ? 480 : 450,
-            height: s.doubleGlow ? 480 : 450,
+            width: s.doubleGlow ? d.glowOuter : d.glowOuter * 0.94,
+            height: s.doubleGlow ? d.glowOuter : d.glowOuter * 0.94,
             background: `radial-gradient(circle, ${s.glowColor}33 0%, transparent 70%)`,
           }}
         />
         {s.doubleGlow && (
           <div
             className="-translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2 rounded-full"
-            style={{ width: 400, height: 400, background: `radial-gradient(circle, ${s.glowColor}22 0%, transparent 70%)` }}
+            style={{ width: d.glowInner, height: d.glowInner, background: `radial-gradient(circle, ${s.glowColor}22 0%, transparent 70%)` }}
           />
         )}
         <div
-          className="bg-[#121212] border-solid content-stretch flex h-[200px] items-center justify-center p-[12px] relative rounded-[4px] shrink-0 w-[260px]"
-          style={{ borderWidth: 1, borderColor: s.frameBorder }}
+          className="bg-[#121212] border-solid content-stretch flex items-center justify-center p-[12px] relative rounded-[4px] shrink-0"
+          style={{ height: d.frameSize, width: d.frameSize * 1.3, borderWidth: 1, borderColor: s.frameBorder }}
           data-name="result-item-frame"
         >
           <div className="flex-[1_0_0] h-full min-w-px relative" style={s.dimmed ? { opacity: 0.3 } : undefined}>
@@ -91,7 +108,11 @@ export function ItemShowcase({
         </div>
       </div>
 
-      <div className="content-stretch flex flex-col gap-[12px] items-center relative shrink-0 w-[800px]" data-name="result-header">
+      <div
+        className="content-stretch flex flex-col gap-[12px] items-center relative shrink-0"
+        style={{ width: d.headerWidth }}
+        data-name="result-header"
+      >
         <div
           className="content-stretch flex items-start px-[12px] py-[4px] relative rounded-[2px] shrink-0 border-solid"
           style={{ background: s.badgeBackground, borderWidth: 1, borderColor: s.badgeBorder }}
@@ -105,8 +126,8 @@ export function ItemShowcase({
           </p>
         </div>
         <p
-          className="[word-break:break-word] font-['Unbounded:Black',sans-serif] font-black leading-[normal] min-w-full relative shrink-0 text-[40px] text-center w-[min-content]"
-          style={{ color: s.headingColor }}
+          className="[word-break:break-word] font-['Unbounded:Black',sans-serif] font-black leading-[normal] min-w-full relative shrink-0 text-center w-[min-content]"
+          style={{ color: s.headingColor, fontSize: d.nameFontSize }}
         >
           {itemName.toUpperCase()}
         </p>

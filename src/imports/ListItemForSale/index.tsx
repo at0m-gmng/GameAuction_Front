@@ -50,7 +50,7 @@ export default function ListItemForSale({
       data-name="list-item-overlay"
     >
       <div
-        className="bg-[#0a0a0a] border border-[#2a2a2a] border-solid content-stretch flex flex-col gap-[40px] items-center px-[48px] py-[64px] relative max-h-[90vh] overflow-y-auto"
+        className="bg-[#0a0a0a] border border-[#2a2a2a] border-solid content-stretch flex flex-col gap-[20px] items-center px-[40px] py-[32px] relative max-h-[95vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         data-name="list-item-panel"
       >
@@ -58,7 +58,7 @@ export default function ListItemForSale({
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-[24px] top-[24px] text-[#888] text-[20px] leading-none cursor-pointer hover:text-[#e0e0e0]"
+          className="absolute right-[20px] top-[20px] text-[#888] text-[20px] leading-none cursor-pointer hover:text-[#e0e0e0]"
         >
           ×
         </button>
@@ -75,13 +75,14 @@ export default function ListItemForSale({
 
         <ItemShowcase
           tone="positive"
+          size="compact"
           itemName={item.itemName}
           itemImageUrl={item.itemImageUrl}
           badgeLabel={`★ ${formatRarityLabel(item.itemRarity)} ★`}
         />
 
         <div
-          className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-col gap-[8px] items-start p-[24px] relative shrink-0 w-[680px]"
+          className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-col gap-[6px] items-start p-[16px] relative shrink-0 w-[480px]"
           data-name="price-input-panel"
         >
           <label
@@ -105,7 +106,7 @@ export default function ListItemForSale({
         </div>
 
         {errorMessage && (
-          <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#f33] text-[12px] text-center w-[680px] -mt-[24px]">
+          <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#f33] text-[12px] text-center w-[480px] -mt-[10px]">
             {errorMessage}
           </p>
         )}
@@ -114,7 +115,7 @@ export default function ListItemForSale({
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting}
-          className="bg-[#ffb000] content-stretch flex items-center justify-center py-[16px] relative shrink-0 w-[680px] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-[#ffb000] content-stretch flex items-center justify-center py-[14px] relative shrink-0 w-[480px] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         >
           <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[14px] uppercase whitespace-nowrap">
             {isSubmitting ? "LISTING..." : "LIST FOR SALE"}
