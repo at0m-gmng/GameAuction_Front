@@ -150,12 +150,14 @@ function ColTimer({ status, endsAt }: { status: number; endsAt: string | null })
   );
 }
 
-function ColAction({ status }: { status: number }) {
+function ColAction({ status, onEnter }: { status: number; onEnter?: () => void }) {
   const isLive = status === 200;
   return (
     <div className="content-stretch flex flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
-      <div
-        className="content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0"
+      <button
+        type="button"
+        onClick={onEnter}
+        className="content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0 cursor-pointer"
         style={{ background: isLive ? "#ffb000" : "rgba(0,0,0,0)" }}
         data-name="button-terminal"
       >
@@ -166,12 +168,12 @@ function ColAction({ status }: { status: number }) {
         >
           ENTER LOBBY
         </p>
-      </div>
+      </button>
     </div>
   );
 }
 
-function LobbyRow({ lobby }: { lobby: LobbyListItem }) {
+function LobbyRow({ lobby, onEnterLobby }: { lobby: LobbyListItem; onEnterLobby?: (lobbyId: string) => void }) {
   return (
     <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
       <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
@@ -180,7 +182,7 @@ function LobbyRow({ lobby }: { lobby: LobbyListItem }) {
       <ColStatus status={lobby.status} />
       <ColBid currentBid={lobby.currentBid} />
       <ColTimer status={lobby.status} endsAt={lobby.endsAt} />
-      <ColAction status={lobby.status} />
+      <ColAction status={lobby.status} onEnter={() => onEnterLobby?.(lobby.id)} />
     </div>
   );
 }
@@ -193,17 +195,27 @@ function EmptyState({ label }: { label: string }) {
   );
 }
 
-function TableBody({ lobbies }: { lobbies: LobbyListItem[] }) {
+function TableBody({ lobbies, onEnterLobby }: { lobbies: LobbyListItem[]; onEnterLobby?: (lobbyId: string) => void }) {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-name="table-body">
       {lobbies.map((lobby) => (
-        <LobbyRow key={lobby.id} lobby={lobby} />
+        <LobbyRow key={lobby.id} lobby={lobby} onEnterLobby={onEnterLobby} />
       ))}
     </div>
   );
 }
 
-function LobbiesTable({ lobbies, isLoading, allEmpty }: { lobbies: LobbyListItem[]; isLoading: boolean; allEmpty: boolean }) {
+function LobbiesTable({
+  lobbies,
+  isLoading,
+  allEmpty,
+  onEnterLobby,
+}: {
+  lobbies: LobbyListItem[];
+  isLoading: boolean;
+  allEmpty: boolean;
+  onEnterLobby?: (lobbyId: string) => void;
+}) {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-name="lobbies-table">
       <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
@@ -215,7 +227,7 @@ function LobbiesTable({ lobbies, isLoading, allEmpty }: { lobbies: LobbyListItem
       ) : lobbies.length === 0 ? (
         <EmptyState label="NO LOBBIES IN THIS STATUS" />
       ) : (
-        <TableBody lobbies={lobbies} />
+        <TableBody lobbies={lobbies} onEnterLobby={onEnterLobby} />
       )}
     </div>
   );
@@ -224,9 +236,11 @@ function LobbiesTable({ lobbies, isLoading, allEmpty }: { lobbies: LobbyListItem
 export default function OpenLobbies({
   lobbies = [],
   isLoading = false,
+  onEnterLobby,
 }: {
   lobbies?: LobbyListItem[];
   isLoading?: boolean;
+  onEnterLobby?: (lobbyId: string) => void;
 }) {
   const [activeFilter, setActiveFilter] = useState<StatusFilter>("all");
 
@@ -237,7 +251,7 @@ export default function OpenLobbies({
       <div className="content-stretch flex flex-col gap-[24px] items-start p-[48px] relative shrink-0 w-full" data-name="lobbies-body">
         <TitleHeader />
         <TabsRow active={activeFilter} onSelect={setActiveFilter} />
-        <LobbiesTable lobbies={visible} isLoading={isLoading} allEmpty={lobbies.length === 0} />
+        <LobbiesTable lobbies={visible} isLoading={isLoading} allEmpty={lobbies.length === 0} onEnterLobby={onEnterLobby} />
       </div>
     </div>
   );

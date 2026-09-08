@@ -21,9 +21,9 @@ export interface LobbyAuctionData {
   lobbyCode: string;
   itemName: string;
   itemImageUrl: string | null;
-  itemDescription: string;
+  itemDescription: string | null;
   itemRarity: number;
-  itemCategory: number;
+  itemCategory: number | null;
   currentBid: number;
   currentBidderName: string | null;
   timeRemainingLabel: string;
@@ -121,16 +121,20 @@ function ShowcasePanel({ data }: { data: LobbyAuctionData }) {
               {formatRarityLabel(data.itemRarity)}
             </p>
           </div>
-          <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">
-            {`CLASS: ${formatCategoryLabel(data.itemCategory)}`}
-          </p>
+          {data.itemCategory !== null && (
+            <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">
+              {`CLASS: ${formatCategoryLabel(data.itemCategory)}`}
+            </p>
+          )}
         </div>
         <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[20px] w-full">
           {data.itemName}
         </p>
-        <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[18px] relative shrink-0 text-[#e0e0e0] text-[13px] w-full">
-          {data.itemDescription}
-        </p>
+        {data.itemDescription && (
+          <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[18px] relative shrink-0 text-[#e0e0e0] text-[13px] w-full">
+            {data.itemDescription}
+          </p>
+        )}
       </div>
     </div>
   );

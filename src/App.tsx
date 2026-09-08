@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { AnimPanel } from "@/dev/AnimPanel";
 import { InteractiveLanding } from "@/screens/Landing";
 import { InteractiveLobbies } from "@/screens/Lobbies";
+import { InteractiveLobbyDetail } from "@/screens/LobbyDetail";
 import { InteractiveLogin } from "@/screens/Login";
 import { InteractiveCatalog } from "@/screens/Catalog";
 import { InteractiveProfile } from "@/screens/Profile";
@@ -12,7 +13,8 @@ import { type AnimConfig, type TransitionState, defaultConfig, getAnimationNames
 // you were, but reopening the app days later should still start at the
 // marketing landing page, not silently resume some old session.
 const PAGE_STORAGE_KEY = "nexus_page";
-const VALID_PAGES: readonly Page[] = ["landing", "lobbies", "login", "catalog", "profile"];
+const LOBBY_ID_STORAGE_KEY = "nexus_selected_lobby_id";
+const VALID_PAGES: readonly Page[] = ["landing", "lobbies", "login", "catalog", "profile", "lobby-detail"];
 
 function getPersistedPage(): Page {
   const stored = sessionStorage.getItem(PAGE_STORAGE_KEY);
@@ -21,6 +23,7 @@ function getPersistedPage(): Page {
 
 export default function App() {
   const [page, setPage] = useState<Page>(getPersistedPage);
+  const [selectedLobbyId, setSelectedLobbyId] = useState<string | null>(() => sessionStorage.getItem(LOBBY_ID_STORAGE_KEY));
   const [pendingPage, setPendingPage] = useState<Page | null>(null);
   const [transitionState, setTransitionState] = useState<TransitionState>("idle");
   const [config, setConfig] = useState<AnimConfig>(defaultConfig);
@@ -60,6 +63,14 @@ export default function App() {
     [page, transitionState, runTransition]
   );
 
+  const enterLobby = useCallback(
+    (lobbyId: string) => {
+      setSelectedLobbyId(lobbyId);
+      navigate("lobby-detail");
+    },
+    [navigate]
+  );
+
   // Goes to whatever screen was actually visited before this one, instead
   // of a fixed destination. No-op at the root of the history stack.
   const goBack = useCallback(() => {
@@ -76,6 +87,11 @@ export default function App() {
   useEffect(() => {
     sessionStorage.setItem(PAGE_STORAGE_KEY, page);
   }, [page]);
+
+  useEffect(() => {
+    if (selectedLobbyId) sessionStorage.setItem(LOBBY_ID_STORAGE_KEY, selectedLobbyId);
+    else sessionStorage.removeItem(LOBBY_ID_STORAGE_KEY);
+  }, [selectedLobbyId]);
 
   const { enter, exit } = getAnimationNames(config.transition, config.direction);
 
@@ -121,7 +137,9 @@ export default function App() {
         {page === "landing" ? (
           <InteractiveLanding onNavigate={navigate} />
         ) : page === "lobbies" ? (
-          <InteractiveLobbies onNavigate={navigate} />
+          <InteractiveLobbies onNavigate={navigate} onEnterLobby={enterLobby} />
+        ) : page === "lobby-detail" && selectedLobbyId ? (
+          <InteractiveLobbyDetail lobbyId={selectedLobbyId} onNavigate={navigate} />
         ) : page === "login" ? (
           <InteractiveLogin onNavigate={navigate} onBack={goBack} />
         ) : page === "catalog" ? (

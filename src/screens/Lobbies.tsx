@@ -4,9 +4,13 @@ import OpenLobbies, { type LobbyListItem } from "@/imports/OpenLobbies/index";
 import { LOBBY_API_BASE_URL } from "@/lib/config";
 import type { Page } from "@/lib/navigation";
 
-// NOTE: "ENTER LOBBY" doesn't navigate anywhere yet — no lobby-detail/bidding
-// screen exists on the frontend, only the list is wired to real data so far.
-export function InteractiveLobbies({ onNavigate }: { onNavigate: (p: Page) => void }) {
+export function InteractiveLobbies({
+  onNavigate,
+  onEnterLobby,
+}: {
+  onNavigate: (p: Page) => void;
+  onEnterLobby: (lobbyId: string) => void;
+}) {
   const [lobbies, setLobbies] = useState<LobbyListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,7 +37,7 @@ export function InteractiveLobbies({ onNavigate }: { onNavigate: (p: Page) => vo
   return (
     <div style={{ width: "100%", minHeight: "100%", display: "flex", flexDirection: "column" }}>
       <SharedTopNav active="lobbies" onNavigate={onNavigate} />
-      <OpenLobbies lobbies={lobbies} isLoading={isLoading} />
+      <OpenLobbies lobbies={lobbies} isLoading={isLoading} onEnterLobby={onEnterLobby} />
     </div>
   );
 }
