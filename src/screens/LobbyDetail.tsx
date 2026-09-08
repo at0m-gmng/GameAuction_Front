@@ -76,6 +76,12 @@ export function InteractiveLobbyDetail({
       .catch((error: unknown) => console.error("Failed to load lobby:", error));
   }, [lobbyId, auth.token]);
 
+  // NOTE: fetch runs immediately, not after join — join is a second, parallel
+  // round-trip; waiting for it first doubled the time before anything painted.
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   useEffect(() => {
     if (!auth.token) return;
 
@@ -86,6 +92,26 @@ export function InteractiveLobbyDetail({
       .catch((error: unknown) => console.error("Failed to join lobby:", error))
       .finally(refetch);
   }, [lobbyId, auth.token, refetch]);
+
+  // NOTE: keepalive lets this survive both SPA navigation-away (effect cleanup)
+  // and a real tab close/refresh (beforeunload) — a plain fetch gets cancelled in both cases.
+  useEffect(() => {
+    if (!auth.token) return;
+
+    const leave = () => {
+      fetch(`${LOBBY_API_BASE_URL}/api/lobbies/${lobbyId}/leave`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${auth.token}` },
+        keepalive: true,
+      }).catch(() => {});
+    };
+
+    window.addEventListener("beforeunload", leave);
+    return () => {
+      window.removeEventListener("beforeunload", leave);
+      leave();
+    };
+  }, [lobbyId, auth.token]);
 
   useLobbySocket(lobbyId, refetch);
 

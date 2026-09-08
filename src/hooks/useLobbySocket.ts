@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { LOBBY_API_BASE_URL } from "@/lib/config";
 
-const LOBBY_EVENTS = ["PlayerJoinedLobby", "BidPlaced", "AuctionCompleted", "RoundExpiredWithoutBids"] as const;
+const LOBBY_EVENTS = ["PlayerJoinedLobby", "PlayerLeftLobby", "BidPlaced", "AuctionCompleted", "RoundExpiredWithoutBids"] as const;
 
 // NOTE: onChange должен быть мемоизирован (useCallback) — иначе соединение пересоздаётся на каждый рендер.
 /**

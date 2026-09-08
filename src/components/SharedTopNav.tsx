@@ -39,9 +39,9 @@ export function SharedTopNav({
       style={{
         background: "#121212",
         height: 80,
-        display: "flex",
+        display: "grid",
+        gridTemplateColumns: "1fr auto 1fr",
         alignItems: "center",
-        justifyContent: "space-between",
         padding: "0 48px",
         borderBottom: "1px solid #ffb000",
         flexShrink: 0,
@@ -49,7 +49,7 @@ export function SharedTopNav({
         zIndex: 10,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, justifySelf: "start" }}>
         <div style={{ width: 24, height: 24, background: "#ffb000", border: "1px solid #d4af37", borderRadius: 2 }} />
         <span style={{ fontFamily: "'Unbounded:ExtraBold', sans-serif", fontWeight: 800, fontSize: 16, color: "#ffb000" }}>
           NEXUS EXCHANGE
@@ -57,7 +57,7 @@ export function SharedTopNav({
       </div>
 
       {!minimal && (
-        <div style={{ display: "flex", gap: 40, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 40, alignItems: "center", justifySelf: "center" }}>
           {navItems.map(({ label, page }) => (
             <button
               key={page}
@@ -92,7 +92,7 @@ export function SharedTopNav({
       )}
 
       {!minimal && (
-        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 24, alignItems: "center", justifySelf: "end" }}>
           {isLoggedIn && (
             <div
               style={{
