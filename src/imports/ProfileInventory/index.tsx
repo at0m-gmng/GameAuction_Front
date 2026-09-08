@@ -231,7 +231,7 @@ function InventoryItemCard({ item }: { item: ProfileInventoryItem }) {
   const { color, background } = rarityColors(item.rarity);
 
   return (
-    <div className="bg-[#121212] content-stretch flex flex-col gap-[12px] items-start p-[12px] relative shrink-0 w-[76px]" data-name="item-card">
+    <div className="bg-[#121212] content-stretch flex flex-col gap-[12px] items-start p-[12px] relative shrink-0 w-[92px]" data-name="item-card">
       <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
       <ItemCardHudCorners />
       <div className="h-[140px] relative shrink-0 w-full flex items-center justify-center" data-name="item-thumb">
@@ -254,14 +254,17 @@ function InventoryItemCard({ item }: { item: ProfileInventoryItem }) {
             {formatRarityLabel(item.rarity)}
           </p>
         </div>
-        <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] min-w-full overflow-hidden relative shrink-0 text-[13px] text-ellipsis text-white w-[min-content] whitespace-nowrap">
+        <p
+          className="line-clamp-2 min-h-[32px] [word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[1.3] relative shrink-0 text-[12px] text-white w-full"
+          title={item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name}
+        >
           {item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name}
         </p>
-        <div className="[word-break:break-word] content-stretch flex font-normal items-start justify-between leading-[normal] relative shrink-0 text-[10px] w-full whitespace-nowrap" data-name="meta-market">
-          <p className="flex-[1_0_0] font-['Geist_Mono:Regular',sans-serif] h-[13px] min-w-px overflow-hidden relative text-[#888] text-ellipsis">
+        <div className="content-stretch flex flex-col font-normal gap-[3px] items-start leading-[normal] relative shrink-0 text-[9px] w-full" data-name="meta-market">
+          <p className="truncate font-['Geist_Mono:Regular',sans-serif] relative text-[#888] w-full" title={`VAL // ${formatBalance(item.startingPrice)}`}>
             {`VAL // ${formatBalance(item.startingPrice)}`}
           </p>
-          <p className="flex-[1_0_0] font-['Geist_Mono:Regular',sans-serif] h-[13px] min-w-px overflow-hidden relative text-[#ffb000] text-ellipsis">
+          <p className="font-['Geist_Mono:Regular',sans-serif] relative text-[#ffb000] w-full">
             {formatAcquiredDate(item.acquiredAt)}
           </p>
         </div>
