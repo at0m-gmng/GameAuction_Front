@@ -6,53 +6,56 @@ import imgThumb4 from "./9230743b4b1b2306e372dfa3967c2a5751e3ab20.png";
 
 function TitleHeader() {
   return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[8px] items-start leading-[normal] relative shrink-0 w-full whitespace-nowrap" data-name="title-header">
-      <p className="font-['Unbounded:ExtraBold',sans-serif] font-extrabold relative shrink-0 text-[#ffb000] text-[28px]">ACTIVE LOBBIES</p>
-      <p className="font-['Geist:Regular',sans-serif] font-normal relative shrink-0 text-[#e0e0e0] text-[14px]">Join players in real time and bid for high-grade cybernetic salvage.</p>
+    <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full" data-name="title-header">
+      <div className="content-stretch flex gap-[8px] items-center relative shrink-0 font-['Geist_Mono:Regular',sans-serif] text-[11px] whitespace-nowrap">
+        <span className="text-[#888]">NEXUS</span>
+        <span className="text-[#888]">{">"}</span>
+        <span className="text-[#ffb000]">LOBBIES</span>
+      </div>
+      <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[28px] whitespace-nowrap">ACTIVE LOBBIES</p>
+      <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#e0e0e0] text-[14px] whitespace-nowrap">Join players in real time and bid for high-grade cybernetic salvage.</p>
     </div>
   );
 }
 
 function Frame3() {
   return (
-    <div className="bg-[rgba(212,175,55,0.25)] content-stretch flex items-center justify-center px-[32px] py-[16px] relative shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border-0 border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap">ALL</p>
+    <div className="bg-[#ffb000] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
+      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[11px] whitespace-nowrap">ALL</p>
     </div>
   );
 }
 
 function Frame4() {
   return (
-    <div className="bg-[rgba(0,0,0,0)] content-stretch flex items-center justify-center px-[32px] py-[16px] relative shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border-[#2a2a2a] border-l border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">COLLECTING</p>
+    <div className="bg-[#121212] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
+      <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none rounded-[2px]" />
+      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#e0e0e0] text-[11px] whitespace-nowrap">COLLECTING</p>
     </div>
   );
 }
 
 function Frame5() {
   return (
-    <div className="bg-[rgba(0,0,0,0)] content-stretch flex items-center justify-center px-[32px] py-[16px] relative shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border-[#2a2a2a] border-l border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">LIVE</p>
+    <div className="bg-[#121212] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
+      <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none rounded-[2px]" />
+      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#e0e0e0] text-[11px] whitespace-nowrap">LIVE</p>
     </div>
   );
 }
 
 function Frame6() {
   return (
-    <div className="bg-[rgba(0,0,0,0)] content-stretch flex items-center justify-center px-[32px] py-[16px] relative shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border-[#2a2a2a] border-l border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">COMPLETED</p>
+    <div className="bg-[#121212] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
+      <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none rounded-[2px]" />
+      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#e0e0e0] text-[11px] whitespace-nowrap">COMPLETED</p>
     </div>
   );
 }
 
 function TabsRow() {
   return (
-    <div className="bg-[#121212] content-stretch flex items-start relative shrink-0 w-full" data-name="tabs-row">
-      <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
+    <div className="content-stretch flex gap-[12px] items-start justify-center relative shrink-0 w-full" data-name="tabs-row">
       <Frame3 />
       <Frame4 />
       <Frame5 />

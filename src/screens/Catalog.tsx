@@ -82,7 +82,7 @@ export function InteractiveCatalog({ onNavigate }: { onNavigate: (p: Page) => vo
         </div>
 
         {/* Filters */}
-        <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -108,15 +108,16 @@ export function InteractiveCatalog({ onNavigate }: { onNavigate: (p: Page) => vo
         {/* Grid */}
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, 280px)",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
             gap: 24,
           }}
         >
           {visible.map((item) => (
             <div
               key={item.name}
-              style={{ background: "#121212", border: "1px solid #2a2a2a", display: "flex", flexDirection: "column" }}
+              style={{ background: "#121212", border: "1px solid #2a2a2a", display: "flex", flexDirection: "column", width: 280, flexShrink: 0 }}
             >
               <div style={{ height: 200, overflow: "hidden", position: "relative" }}>
                 <img

@@ -2,6 +2,25 @@ export function formatBalance(amount: number): string {
   return `${amount.toLocaleString("en-US")} ₵`;
 }
 
+// NOTE: тиры растут до триллиона — цены не всегда будут заданы кодом (см. игроков со своими лотами).
+const COMPACT_BALANCE_TIERS: readonly [threshold: number, suffix: string][] = [
+  [1_000_000_000_000, "T"],
+  [1_000_000_000, "B"],
+  [1_000_000, "M"],
+  [1_000, "K"],
+];
+
+// NOTE: для тесных карточек — полная сумма (formatBalance) там не влезает.
+export function formatCompactBalance(amount: number): string {
+  const abs = Math.abs(amount);
+  const tier = COMPACT_BALANCE_TIERS.find(([threshold]) => abs >= threshold);
+  return tier ? `${trimTrailingZero(amount / tier[0])}${tier[1]} ₵` : formatBalance(amount);
+}
+
+function trimTrailingZero(value: number): string {
+  return value.toFixed(1).replace(/\.0$/, "");
+}
+
 export function formatMemberSince(isoDate: string): string {
   const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
   const date = new Date(isoDate);

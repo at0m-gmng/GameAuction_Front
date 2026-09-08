@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatAcquiredDate, formatBalance, formatCategoryLabel, formatMemberSince, formatRarityLabel, rarityColors } from "./format";
+import { formatAcquiredDate, formatBalance, formatCategoryLabel, formatCompactBalance, formatMemberSince, formatRarityLabel, rarityColors } from "./format";
 
 describe("formatBalance", () => {
   it("formats a whole number with thousands separators and the credit symbol", () => {
@@ -8,6 +8,23 @@ describe("formatBalance", () => {
 
   it("formats zero", () => {
     expect(formatBalance(0)).toBe("0 ₵");
+  });
+});
+
+describe("formatCompactBalance", () => {
+  it.each([
+    [999, "999 ₵"],
+    [1_500, "1.5K ₵"],
+    [50_000, "50K ₵"],
+    [1_200_000, "1.2M ₵"],
+    [5_000_000_000, "5B ₵"],
+    [2_500_000_000_000, "2.5T ₵"],
+  ])("formats %i as %s", (amount, expected) => {
+    expect(formatCompactBalance(amount)).toBe(expected);
+  });
+
+  it("keeps the full number below the K tier", () => {
+    expect(formatCompactBalance(842500)).toBe("842.5K ₵");
   });
 });
 

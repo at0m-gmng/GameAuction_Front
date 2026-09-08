@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { formatAcquiredDate, formatBalance, formatCategoryLabel, formatRarityLabel, rarityColors } from "@/lib/format";
+import { formatAcquiredDate, formatCategoryLabel, formatCompactBalance, formatRarityLabel, rarityColors } from "@/lib/format";
 import imgAvatar from "./2737e4614601b8c4372249e7a0e7ee82af9b8606.png";
 
 export interface ProfileData {
@@ -231,7 +231,7 @@ function InventoryItemCard({ item }: { item: ProfileInventoryItem }) {
   const { color, background } = rarityColors(item.rarity);
 
   return (
-    <div className="bg-[#121212] content-stretch flex flex-col gap-[12px] items-start p-[12px] relative shrink-0 w-[92px]" data-name="item-card">
+    <div className="bg-[#121212] content-stretch flex flex-col gap-[12px] items-center p-[10px] relative shrink-0 w-[92px]" data-name="item-card">
       <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
       <ItemCardHudCorners />
       <div className="h-[140px] relative shrink-0 w-full flex items-center justify-center" data-name="item-thumb">
@@ -241,7 +241,7 @@ function InventoryItemCard({ item }: { item: ProfileInventoryItem }) {
           <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 9, color: "#444" }}>NO IMAGE</p>
         )}
       </div>
-      <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0 w-full" data-name="item-details">
+      <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0 w-full" data-name="item-details">
         <div
           className="content-stretch flex items-start px-[6px] py-[2px] relative rounded-[2px] shrink-0"
           style={{ background, border: `1px solid ${color}` }}
@@ -255,16 +255,16 @@ function InventoryItemCard({ item }: { item: ProfileInventoryItem }) {
           </p>
         </div>
         <p
-          className="line-clamp-2 min-h-[32px] [word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[1.3] relative shrink-0 text-[12px] text-white w-full"
+          className="line-clamp-2 min-h-[32px] [word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[1.3] relative shrink-0 text-[12px] text-white text-center w-full"
           title={item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name}
         >
           {item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name}
         </p>
-        <div className="content-stretch flex flex-col font-normal gap-[3px] items-start leading-[normal] relative shrink-0 text-[9px] w-full" data-name="meta-market">
-          <p className="truncate font-['Geist_Mono:Regular',sans-serif] relative text-[#888] w-full" title={`VAL // ${formatBalance(item.startingPrice)}`}>
-            {`VAL // ${formatBalance(item.startingPrice)}`}
+        <div className="content-stretch flex flex-col font-normal gap-[3px] items-center leading-[normal] relative shrink-0 text-[9px] w-full" data-name="meta-market">
+          <p className="truncate text-center font-['Geist_Mono:Regular',sans-serif] relative text-[#888] w-full" title={`VAL // ${formatCompactBalance(item.startingPrice)}`}>
+            {`VAL // ${formatCompactBalance(item.startingPrice)}`}
           </p>
-          <p className="font-['Geist_Mono:Regular',sans-serif] relative text-[#ffb000] w-full">
+          <p className="text-center font-['Geist_Mono:Regular',sans-serif] relative text-[#ffb000] w-full">
             {formatAcquiredDate(item.acquiredAt)}
           </p>
         </div>
