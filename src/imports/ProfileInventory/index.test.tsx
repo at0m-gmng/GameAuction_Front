@@ -37,8 +37,9 @@ describe("ProfileInventory", () => {
     expect(screen.getByText("EQUIPPED SALVAGE (1 ITEM)")).toBeTruthy();
     expect(screen.getByText("Kang Tao EMP Cannon")).toBeTruthy();
     expect(screen.getByText("EPIC")).toBeTruthy();
-    expect(screen.getByText("VAL // 185K ₵")).toBeTruthy();
-    expect(screen.getByText("ACQUIRED // 01.05")).toBeTruthy();
+    expect(screen.getByText("185K ₵")).toBeTruthy();
+    expect(screen.getByText("ACQUIRED")).toBeTruthy();
+    expect(screen.getByText("01.05")).toBeTruthy();
   });
 
   it("shows quantity for stacked items", () => {

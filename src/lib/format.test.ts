@@ -42,7 +42,7 @@ describe("formatMemberSince", () => {
 
 describe("formatAcquiredDate", () => {
   it("formats an ISO date as zero-padded MM.DD", () => {
-    expect(formatAcquiredDate("2026-01-05T10:00:00Z")).toBe("ACQUIRED // 01.05");
+    expect(formatAcquiredDate("2026-01-05T10:00:00Z")).toBe("01.05");
   });
 });
 

@@ -260,11 +260,17 @@ function InventoryItemCard({ item }: { item: ProfileInventoryItem }) {
         >
           {item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name}
         </p>
-        <div className="content-stretch flex flex-col font-normal gap-[3px] items-center leading-[normal] relative shrink-0 text-[9px] w-full" data-name="meta-market">
-          <p className="truncate text-center font-['Geist_Mono:Regular',sans-serif] relative text-[#888] w-full" title={`VAL // ${formatCompactBalance(item.startingPrice)}`}>
-            {`VAL // ${formatCompactBalance(item.startingPrice)}`}
+        <div className="content-stretch flex flex-col font-normal gap-[3px] items-center leading-[normal] relative shrink-0 w-full" data-name="meta-market">
+          <p
+            className="truncate text-center font-['Geist_Mono:Regular',sans-serif] relative text-[#888] text-[11px] w-full"
+            title={formatCompactBalance(item.startingPrice)}
+          >
+            {formatCompactBalance(item.startingPrice)}
           </p>
-          <p className="text-center font-['Geist_Mono:Regular',sans-serif] relative text-[#ffb000] w-full">
+          <p className="text-center font-['Geist_Mono:Regular',sans-serif] relative text-[#ffb000] text-[9px] w-full">
+            ACQUIRED
+          </p>
+          <p className="text-center font-['Geist_Mono:Regular',sans-serif] relative text-[#ffb000] text-[9px] w-full">
             {formatAcquiredDate(item.acquiredAt)}
           </p>
         </div>
