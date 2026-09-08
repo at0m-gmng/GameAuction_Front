@@ -2,3 +2,4 @@
 // keep them here instead of scattering hardcoded hosts across API call sites.
 export const IDENTITY_API_BASE_URL = "https://gamebackend-mbqb.onrender.com";
 export const CATALOG_API_BASE_URL = "https://gamebackend-catalog-api.onrender.com";
+export const LOBBY_API_BASE_URL = "https://gamebackend-lobby-api.onrender.com";

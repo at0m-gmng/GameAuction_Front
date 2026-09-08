@@ -65,3 +65,37 @@ export function formatCategoryLabel(category: number): string {
     default: return "UNKNOWN";
   }
 }
+
+// Backend LobbyStatus enum: Gathering=100, Bidding=200, Completed=300, Cancelled=400.
+export function formatLobbyStatusLabel(status: number): string {
+  switch (status) {
+    case 100: return "COLLECTING";
+    case 200: return "AUCTION LIVE";
+    case 300: return "COMPLETED";
+    case 400: return "CANCELLED";
+    default: return "UNKNOWN";
+  }
+}
+
+export function lobbyStatusColors(status: number): { color: string; background: string } {
+  switch (status) {
+    case 200: return { color: "#ffb000", background: "rgba(255,176,0,0.08)" };
+    case 100: return { color: "#fbbf24", background: "rgba(251,191,36,0.08)" };
+    case 400: return { color: "#ff6060", background: "rgba(255,96,96,0.08)" };
+    default: return { color: "#888", background: "rgba(42,42,42,0.31)" };
+  }
+}
+
+export function formatTimeLeft(endsAt: string | null): string {
+  if (!endsAt) return "STARTING SOON";
+
+  const msLeft = new Date(endsAt).getTime() - Date.now();
+  if (msLeft <= 0) return "ENDED";
+
+  const totalSeconds = Math.floor(msLeft / 1000);
+  if (totalSeconds < 60) return `${totalSeconds} SEC`;
+
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")} MIN`;
+}

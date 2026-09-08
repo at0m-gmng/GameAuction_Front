@@ -1,8 +1,18 @@
-import imgThumb from "./492a36d693a9b0c3bd7546ee265678018f3ef48b.png";
-import imgThumb1 from "./8ac53f856ca61df443d3fdc23615e1ec9dc6b8b4.png";
-import imgThumb2 from "./66f949338538c454d5b8a509557171d2352f5a73.png";
-import imgThumb3 from "./8cc6f3d116dd1e247a21215d47fac482d47cb248.png";
-import imgThumb4 from "./9230743b4b1b2306e372dfa3967c2a5751e3ab20.png";
+import { useState } from "react";
+import { formatBalance, formatLobbyStatusLabel, formatTimeLeft, lobbyStatusColors } from "@/lib/format";
+
+export interface LobbyListItem {
+  id: string;
+  itemId: string;
+  itemName: string;
+  itemImageUrl: string | null;
+  startingPrice: number;
+  status: number;
+  slotsTaken: number;
+  maxSlots: number;
+  currentBid: number;
+  endsAt: string | null;
+}
 
 function TitleHeader() {
   return (
@@ -18,48 +28,34 @@ function TitleHeader() {
   );
 }
 
-function Frame3() {
+type StatusFilter = number | "all";
+
+function FilterTab({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <div className="bg-[#ffb000] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[11px] whitespace-nowrap">ALL</p>
-    </div>
+    <button
+      onClick={onClick}
+      className="content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0"
+      style={{ background: active ? "#ffb000" : "#121212", border: active ? "none" : "1px solid rgba(212,175,55,0.25)", cursor: "pointer", outline: "none" }}
+      data-name="Frame"
+    >
+      <p
+        className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[11px] whitespace-nowrap"
+        style={{ color: active ? "#0a0a0a" : "#e0e0e0" }}
+      >
+        {label}
+      </p>
+    </button>
   );
 }
 
-function Frame4() {
-  return (
-    <div className="bg-[#121212] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#e0e0e0] text-[11px] whitespace-nowrap">COLLECTING</p>
-    </div>
-  );
-}
-
-function Frame5() {
-  return (
-    <div className="bg-[#121212] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#e0e0e0] text-[11px] whitespace-nowrap">LIVE</p>
-    </div>
-  );
-}
-
-function Frame6() {
-  return (
-    <div className="bg-[#121212] content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[2px] shrink-0" data-name="Frame">
-      <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#e0e0e0] text-[11px] whitespace-nowrap">COMPLETED</p>
-    </div>
-  );
-}
-
-function TabsRow() {
+// Backend LobbyStatus: Gathering=100, Bidding=200, Completed=300.
+function TabsRow({ active, onSelect }: { active: StatusFilter; onSelect: (f: StatusFilter) => void }) {
   return (
     <div className="content-stretch flex gap-[12px] items-start justify-center relative shrink-0 w-full" data-name="tabs-row">
-      <Frame3 />
-      <Frame4 />
-      <Frame5 />
-      <Frame6 />
+      <FilterTab label="ALL" active={active === "all"} onClick={() => onSelect("all")} />
+      <FilterTab label="COLLECTING" active={active === 100} onClick={() => onSelect(100)} />
+      <FilterTab label="LIVE" active={active === 200} onClick={() => onSelect(200)} />
+      <FilterTab label="COMPLETED" active={active === 300} onClick={() => onSelect(300)} />
     </div>
   );
 }
@@ -78,537 +74,171 @@ function TableHeader() {
   );
 }
 
-function ColItem() {
+function ColItem({ name, imageUrl }: { name: string; imageUrl: string | null }) {
   return (
     <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-[320px]" data-name="col-item">
-      <div className="relative rounded-[4px] shrink-0 size-[64px]" data-name="thumb">
-        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[4px] size-full" src={imgThumb} />
+      <div className="relative rounded-[4px] shrink-0 size-[64px] bg-[#181818] flex items-center justify-center" data-name="thumb">
+        {imageUrl ? (
+          <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[4px] size-full" src={imageUrl} />
+        ) : (
+          <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 8, color: "#444" }}>NO IMAGE</span>
+        )}
       </div>
-      <p className="[word-break:break-word] flex-[1_0_0] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] min-w-px overflow-hidden relative text-[14px] text-ellipsis text-white whitespace-nowrap">Satori Neural Link</p>
+      <p className="[word-break:break-word] flex-[1_0_0] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] min-w-px overflow-hidden relative text-[14px] text-ellipsis text-white whitespace-nowrap">
+        {name}
+      </p>
     </div>
   );
 }
 
-function PipsRow() {
+function PipsRow({ slotsTaken, maxSlots }: { slotsTaken: number; maxSlots: number }) {
   return (
     <div className="content-stretch flex gap-[4px] items-start relative shrink-0" data-name="pips-row">
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[rgba(0,0,0,0)] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[rgba(0,0,0,0)] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
+      {Array.from({ length: maxSlots }, (_, i) => (
+        <div
+          key={i}
+          className="border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]"
+          style={{ background: i < slotsTaken ? "#ffb000" : "rgba(0,0,0,0)" }}
+          data-name="Rectangle"
+        />
+      ))}
     </div>
   );
 }
 
-function ColSlots() {
+function ColSlots({ slotsTaken, maxSlots }: { slotsTaken: number; maxSlots: number }) {
   return (
     <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">SLOTS: 4/6</p>
-      <PipsRow />
+      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">
+        {`SLOTS: ${slotsTaken}/${maxSlots}`}
+      </p>
+      <PipsRow slotsTaken={slotsTaken} maxSlots={maxSlots} />
     </div>
   );
 }
 
-function StatusBadge() {
-  return (
-    <div className="bg-[rgba(251,191,36,0.08)] content-stretch flex items-start px-[10px] py-[4px] relative rounded-[2px] shrink-0" data-name="status-badge">
-      <div aria-hidden className="absolute border border-[#fbbf24] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#fbbf24] text-[11px] whitespace-nowrap">COLLECTING</p>
-    </div>
-  );
-}
-
-function ColStatus() {
+function ColStatus({ status }: { status: number }) {
+  const { color, background } = lobbyStatusColors(status);
   return (
     <div className="content-stretch flex items-start relative shrink-0 w-[160px]" data-name="col-status">
-      <StatusBadge />
+      <div className="content-stretch flex items-start px-[10px] py-[4px] relative rounded-[2px] shrink-0" style={{ background }} data-name="status-badge">
+        <div aria-hidden className="absolute border border-solid inset-0 pointer-events-none rounded-[2px]" style={{ borderColor: color }} />
+        <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[11px] whitespace-nowrap" style={{ color }}>
+          {formatLobbyStatusLabel(status)}
+        </p>
+      </div>
     </div>
   );
 }
 
-function ColBid() {
+function ColBid({ currentBid }: { currentBid: number }) {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-bid">
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">CURRENT BID</p>
-      <p className="font-['Geist_Mono:Bold','Noto_Sans:Bold','Noto_Sans_Math:Regular','Noto_Sans_Symbols:Bold','Noto_Sans_Symbols2:Regular',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">250,000 ₵</p>
+      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">{formatBalance(currentBid)}</p>
     </div>
   );
 }
 
-function ColTimer() {
+function ColTimer({ status, endsAt }: { status: number; endsAt: string | null }) {
+  const label = status === 300 ? "COMPLETED" : formatTimeLeft(endsAt);
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-timer">
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">TIME LEFT</p>
-      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[15px] text-white">STARTING SOON</p>
+      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[15px] text-white">{label}</p>
     </div>
   );
 }
 
-function ButtonTerminal() {
-  return (
-    <div className="bg-[rgba(0,0,0,0)] content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0" data-name="button-terminal">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] uppercase whitespace-nowrap">ENTER LOBBY</p>
-    </div>
-  );
-}
-
-function ColAction() {
+function ColAction({ status }: { status: number }) {
+  const isLive = status === 200;
   return (
     <div className="content-stretch flex flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
-      <ButtonTerminal />
-    </div>
-  );
-}
-
-function LobbyRow() {
-  return (
-    <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
-      <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
-      <ColItem />
-      <ColSlots />
-      <ColStatus />
-      <ColBid />
-      <ColTimer />
-      <ColAction />
-    </div>
-  );
-}
-
-function ColItem1() {
-  return (
-    <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-[320px]" data-name="col-item">
-      <div className="relative rounded-[4px] shrink-0 size-[64px]" data-name="thumb">
-        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[4px] size-full" src={imgThumb1} />
+      <div
+        className="content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0"
+        style={{ background: isLive ? "#ffb000" : "rgba(0,0,0,0)" }}
+        data-name="button-terminal"
+      >
+        <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
+        <p
+          className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[12px] uppercase whitespace-nowrap"
+          style={{ color: isLive ? "#0a0a0a" : "#ffb000" }}
+        >
+          ENTER LOBBY
+        </p>
       </div>
-      <p className="[word-break:break-word] flex-[1_0_0] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] min-w-px overflow-hidden relative text-[14px] text-ellipsis text-white whitespace-nowrap">Kusanagi Nanoblade</p>
     </div>
   );
 }
 
-function PipsRow1() {
-  return (
-    <div className="content-stretch flex gap-[4px] items-start relative shrink-0" data-name="pips-row">
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-    </div>
-  );
-}
-
-function ColSlots1() {
-  return (
-    <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">SLOTS: 6/6</p>
-      <PipsRow1 />
-    </div>
-  );
-}
-
-function StatusBadge1() {
-  return (
-    <div className="bg-[rgba(255,176,0,0.08)] content-stretch flex items-start px-[10px] py-[4px] relative rounded-[2px] shrink-0" data-name="status-badge">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#ffb000] text-[11px] whitespace-nowrap">AUCTION LIVE</p>
-    </div>
-  );
-}
-
-function ColStatus1() {
-  return (
-    <div className="content-stretch flex items-start relative shrink-0 w-[160px]" data-name="col-status">
-      <StatusBadge1 />
-    </div>
-  );
-}
-
-function ColBid1() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-bid">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">CURRENT BID</p>
-      <p className="font-['Geist_Mono:Bold','Noto_Sans:Bold','Noto_Sans_Math:Regular','Noto_Sans_Symbols:Bold','Noto_Sans_Symbols2:Regular',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">520,000 ₵</p>
-    </div>
-  );
-}
-
-function ColTimer1() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-timer">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">TIME LEFT</p>
-      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">00:42 SEC</p>
-    </div>
-  );
-}
-
-function ButtonTerminal1() {
-  return (
-    <div className="bg-[#ffb000] content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0" data-name="button-terminal">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[12px] uppercase whitespace-nowrap">ENTER LOBBY</p>
-    </div>
-  );
-}
-
-function ColAction1() {
-  return (
-    <div className="content-stretch flex flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
-      <ButtonTerminal1 />
-    </div>
-  );
-}
-
-function LobbyRow1() {
+function LobbyRow({ lobby }: { lobby: LobbyListItem }) {
   return (
     <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
       <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
-      <ColItem1 />
-      <ColSlots1 />
-      <ColStatus1 />
-      <ColBid1 />
-      <ColTimer1 />
-      <ColAction1 />
+      <ColItem name={lobby.itemName} imageUrl={lobby.itemImageUrl} />
+      <ColSlots slotsTaken={lobby.slotsTaken} maxSlots={lobby.maxSlots} />
+      <ColStatus status={lobby.status} />
+      <ColBid currentBid={lobby.currentBid} />
+      <ColTimer status={lobby.status} endsAt={lobby.endsAt} />
+      <ColAction status={lobby.status} />
     </div>
   );
 }
 
-function ColItem2() {
+function EmptyState({ label }: { label: string }) {
   return (
-    <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-[320px]" data-name="col-item">
-      <div className="relative rounded-[4px] shrink-0 size-[64px]" data-name="thumb">
-        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[4px] size-full" src={imgThumb2} />
-      </div>
-      <p className="[word-break:break-word] flex-[1_0_0] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] min-w-px overflow-hidden relative text-[14px] text-ellipsis text-white whitespace-nowrap">Arasaka Oni Mask v4</p>
+    <div style={{ padding: "48px 0", width: "100%", textAlign: "center" }}>
+      <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 12, color: "#555" }}>{`>> ${label}`}</p>
     </div>
   );
 }
 
-function PipsRow2() {
-  return (
-    <div className="content-stretch flex gap-[4px] items-start relative shrink-0" data-name="pips-row">
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-    </div>
-  );
-}
-
-function ColSlots2() {
-  return (
-    <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">SLOTS: 6/6</p>
-      <PipsRow2 />
-    </div>
-  );
-}
-
-function StatusBadge2() {
-  return (
-    <div className="bg-[rgba(255,176,0,0.08)] content-stretch flex items-start px-[10px] py-[4px] relative rounded-[2px] shrink-0" data-name="status-badge">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#ffb000] text-[11px] whitespace-nowrap">AUCTION LIVE</p>
-    </div>
-  );
-}
-
-function ColStatus2() {
-  return (
-    <div className="content-stretch flex items-start relative shrink-0 w-[160px]" data-name="col-status">
-      <StatusBadge2 />
-    </div>
-  );
-}
-
-function ColBid2() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-bid">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">CURRENT BID</p>
-      <p className="font-['Geist_Mono:Bold','Noto_Sans:Bold','Noto_Sans_Math:Regular','Noto_Sans_Symbols:Bold','Noto_Sans_Symbols2:Regular',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">115,000 ₵</p>
-    </div>
-  );
-}
-
-function ColTimer2() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-timer">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">TIME LEFT</p>
-      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">01:15 MIN</p>
-    </div>
-  );
-}
-
-function ButtonTerminal2() {
-  return (
-    <div className="bg-[#ffb000] content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0" data-name="button-terminal">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[12px] uppercase whitespace-nowrap">ENTER LOBBY</p>
-    </div>
-  );
-}
-
-function ColAction2() {
-  return (
-    <div className="content-stretch flex flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
-      <ButtonTerminal2 />
-    </div>
-  );
-}
-
-function LobbyRow2() {
-  return (
-    <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
-      <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
-      <ColItem2 />
-      <ColSlots2 />
-      <ColStatus2 />
-      <ColBid2 />
-      <ColTimer2 />
-      <ColAction2 />
-    </div>
-  );
-}
-
-function ColItem3() {
-  return (
-    <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-[320px]" data-name="col-item">
-      <div className="relative rounded-[4px] shrink-0 size-[64px]" data-name="thumb">
-        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[4px] size-full" src={imgThumb3} />
-      </div>
-      <p className="[word-break:break-word] flex-[1_0_0] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] min-w-px overflow-hidden relative text-[14px] text-ellipsis text-white whitespace-nowrap">{`Cyberdeck 'Deus-X'`}</p>
-    </div>
-  );
-}
-
-function PipsRow3() {
-  return (
-    <div className="content-stretch flex gap-[4px] items-start relative shrink-0" data-name="pips-row">
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[rgba(0,0,0,0)] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[rgba(0,0,0,0)] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[rgba(0,0,0,0)] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[rgba(0,0,0,0)] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-    </div>
-  );
-}
-
-function ColSlots3() {
-  return (
-    <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">SLOTS: 2/6</p>
-      <PipsRow3 />
-    </div>
-  );
-}
-
-function StatusBadge3() {
-  return (
-    <div className="bg-[rgba(251,191,36,0.08)] content-stretch flex items-start px-[10px] py-[4px] relative rounded-[2px] shrink-0" data-name="status-badge">
-      <div aria-hidden className="absolute border border-[#fbbf24] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#fbbf24] text-[11px] whitespace-nowrap">COLLECTING</p>
-    </div>
-  );
-}
-
-function ColStatus3() {
-  return (
-    <div className="content-stretch flex items-start relative shrink-0 w-[160px]" data-name="col-status">
-      <StatusBadge3 />
-    </div>
-  );
-}
-
-function ColBid3() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-bid">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">CURRENT BID</p>
-      <p className="font-['Geist_Mono:Bold','Noto_Sans:Bold','Noto_Sans_Math:Regular','Noto_Sans_Symbols:Bold','Noto_Sans_Symbols2:Regular',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">600,000 ₵</p>
-    </div>
-  );
-}
-
-function ColTimer3() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-timer">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">TIME LEFT</p>
-      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[15px] text-white">05:00 MIN</p>
-    </div>
-  );
-}
-
-function ButtonTerminal3() {
-  return (
-    <div className="bg-[rgba(0,0,0,0)] content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0" data-name="button-terminal">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] uppercase whitespace-nowrap">ENTER LOBBY</p>
-    </div>
-  );
-}
-
-function ColAction3() {
-  return (
-    <div className="content-stretch flex flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
-      <ButtonTerminal3 />
-    </div>
-  );
-}
-
-function LobbyRow3() {
-  return (
-    <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
-      <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
-      <ColItem3 />
-      <ColSlots3 />
-      <ColStatus3 />
-      <ColBid3 />
-      <ColTimer3 />
-      <ColAction3 />
-    </div>
-  );
-}
-
-function ColItem4() {
-  return (
-    <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-[320px]" data-name="col-item">
-      <div className="relative rounded-[4px] shrink-0 size-[64px]" data-name="thumb">
-        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[4px] size-full" src={imgThumb4} />
-      </div>
-      <p className="[word-break:break-word] flex-[1_0_0] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] min-w-px overflow-hidden relative text-[14px] text-ellipsis text-white whitespace-nowrap">Militech Tactical Vest</p>
-    </div>
-  );
-}
-
-function PipsRow4() {
-  return (
-    <div className="content-stretch flex gap-[4px] items-start relative shrink-0" data-name="pips-row">
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-      <div className="bg-[#ffb000] border border-[rgba(212,175,55,0.25)] border-solid relative rounded-[1px] shrink-0 size-[8px]" data-name="Rectangle" />
-    </div>
-  );
-}
-
-function ColSlots4() {
-  return (
-    <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
-      <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">SLOTS: 6/6</p>
-      <PipsRow4 />
-    </div>
-  );
-}
-
-function StatusBadge4() {
-  return (
-    <div className="bg-[rgba(42,42,42,0.31)] content-stretch flex items-start px-[10px] py-[4px] relative rounded-[2px] shrink-0" data-name="status-badge">
-      <div aria-hidden className="absolute border border-[#888] border-solid inset-0 pointer-events-none rounded-[2px]" />
-      <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">COMPLETED</p>
-    </div>
-  );
-}
-
-function ColStatus4() {
-  return (
-    <div className="content-stretch flex items-start relative shrink-0 w-[160px]" data-name="col-status">
-      <StatusBadge4 />
-    </div>
-  );
-}
-
-function ColBid4() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-bid">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">CURRENT BID</p>
-      <p className="font-['Geist_Mono:Bold','Noto_Sans:Bold','Noto_Sans_Math:Regular','Noto_Sans_Symbols:Bold','Noto_Sans_Symbols2:Regular',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">240,000 ₵</p>
-    </div>
-  );
-}
-
-function ColTimer4() {
-  return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-timer">
-      <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">TIME LEFT</p>
-      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[15px] text-white">COMPLETED</p>
-    </div>
-  );
-}
-
-function ButtonTerminal4() {
-  return (
-    <div className="bg-[rgba(0,0,0,0)] content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0" data-name="button-terminal">
-      <div aria-hidden className="absolute border border-[#ffb000] border-solid inset-0 pointer-events-none" />
-      <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] uppercase whitespace-nowrap">ENTER LOBBY</p>
-    </div>
-  );
-}
-
-function ColAction4() {
-  return (
-    <div className="content-stretch flex flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
-      <ButtonTerminal4 />
-    </div>
-  );
-}
-
-function LobbyRow4() {
-  return (
-    <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
-      <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
-      <ColItem4 />
-      <ColSlots4 />
-      <ColStatus4 />
-      <ColBid4 />
-      <ColTimer4 />
-      <ColAction4 />
-    </div>
-  );
-}
-
-function TableBody() {
+function TableBody({ lobbies }: { lobbies: LobbyListItem[] }) {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-name="table-body">
-      <LobbyRow />
-      <LobbyRow1 />
-      <LobbyRow2 />
-      <LobbyRow3 />
-      <LobbyRow4 />
+      {lobbies.map((lobby) => (
+        <LobbyRow key={lobby.id} lobby={lobby} />
+      ))}
     </div>
   );
 }
 
-function LobbiesTable() {
+function LobbiesTable({ lobbies, isLoading, allEmpty }: { lobbies: LobbyListItem[]; isLoading: boolean; allEmpty: boolean }) {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-name="lobbies-table">
       <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
       <TableHeader />
-      <TableBody />
+      {isLoading ? (
+        <EmptyState label="LOADING LOBBIES..." />
+      ) : allEmpty ? (
+        <EmptyState label="NO ACTIVE LOBBIES YET" />
+      ) : lobbies.length === 0 ? (
+        <EmptyState label="NO LOBBIES IN THIS STATUS" />
+      ) : (
+        <TableBody lobbies={lobbies} />
+      )}
     </div>
   );
 }
 
-function LobbiesBody() {
-  return (
-    <div className="content-stretch flex flex-col gap-[24px] items-start p-[48px] relative shrink-0 w-full" data-name="lobbies-body">
-      <TitleHeader />
-      <TabsRow />
-      <LobbiesTable />
-    </div>
-  );
-}
+export default function OpenLobbies({
+  lobbies = [],
+  isLoading = false,
+}: {
+  lobbies?: LobbyListItem[];
+  isLoading?: boolean;
+}) {
+  const [activeFilter, setActiveFilter] = useState<StatusFilter>("all");
 
-export default function OpenLobbies() {
+  const visible = activeFilter === "all" ? lobbies : lobbies.filter((l) => l.status === activeFilter);
+
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative size-full" data-name="open-lobbies">
-      <LobbiesBody />
+      <div className="content-stretch flex flex-col gap-[24px] items-start p-[48px] relative shrink-0 w-full" data-name="lobbies-body">
+        <TitleHeader />
+        <TabsRow active={activeFilter} onSelect={setActiveFilter} />
+        <LobbiesTable lobbies={visible} isLoading={isLoading} allEmpty={lobbies.length === 0} />
+      </div>
     </div>
   );
 }
