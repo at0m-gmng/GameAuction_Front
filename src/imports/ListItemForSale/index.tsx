@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ItemShowcase } from "@/components/ItemShowcase";
 import { formatRarityLabel } from "@/lib/format";
 
@@ -20,6 +21,7 @@ export default function ListItemForSale({
   onSubmit,
   onClose,
   isSubmitting = false,
+  errorMessage,
 }: {
   item: ListItemForSaleItem;
   priceValue: string;
@@ -27,15 +29,29 @@ export default function ListItemForSale({
   onSubmit?: () => void;
   onClose?: () => void;
   isSubmitting?: boolean;
+  errorMessage?: string;
 }) {
+  useEffect(() => {
+    if (!onClose) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center px-[24px] py-[24px] z-50"
       style={{ background: "rgba(0,0,0,0.75)" }}
+      onClick={onClose}
       data-name="list-item-overlay"
     >
       <div
         className="bg-[#0a0a0a] border border-[#2a2a2a] border-solid content-stretch flex flex-col gap-[40px] items-center px-[48px] py-[64px] relative max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
         data-name="list-item-panel"
       >
         <button
@@ -87,6 +103,12 @@ export default function ListItemForSale({
             <span className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[16px]">₵</span>
           </div>
         </div>
+
+        {errorMessage && (
+          <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#f33] text-[12px] text-center w-[680px] -mt-[24px]">
+            {errorMessage}
+          </p>
+        )}
 
         <button
           type="button"

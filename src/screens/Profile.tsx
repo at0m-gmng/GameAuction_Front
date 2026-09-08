@@ -5,11 +5,16 @@ import { CATALOG_API_BASE_URL } from "@/lib/config";
 import { formatBalance, formatMemberSince } from "@/lib/format";
 import type { Page } from "@/lib/navigation";
 import ProfileInventory, { type ProfileInventoryItem } from "@/imports/ProfileInventory/index";
+import ListItemForSale from "@/imports/ListItemForSale/index";
 
 export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => void }) {
   const auth = useAuth();
   const [inventory, setInventory] = useState<ProfileInventoryItem[]>([]);
   const [isInventoryLoading, setIsInventoryLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ProfileInventoryItem | null>(null);
+  const [priceValue, setPriceValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!auth.token) onNavigate("login");
@@ -48,6 +53,54 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
     };
   }, [auth.token]);
 
+  const handleSelectItem = (item: ProfileInventoryItem) => {
+    setSelectedItem(item);
+    setPriceValue("");
+    setSubmitError(null);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedItem(null);
+    setSubmitError(null);
+  };
+
+  const handleSubmitListing = async () => {
+    if (!selectedItem || !auth.token) return;
+
+    const startingPrice = Number(priceValue);
+    if (!Number.isFinite(startingPrice) || startingPrice <= 0) {
+      setSubmitError("ENTER A VALID PRICE");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch(`${CATALOG_API_BASE_URL}/api/catalog/inventory/${selectedItem.itemId}/list-for-auction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
+        body: JSON.stringify({ startingPrice }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || "LISTING REJECTED BY SERVER");
+      }
+
+      setInventory((prev) =>
+        prev
+          .map((item) => (item.itemId === selectedItem.itemId ? { ...item, quantity: item.quantity - 1 } : item))
+          .filter((item) => item.quantity > 0)
+      );
+      setSelectedItem(null);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message.toUpperCase() : "UPLINK UNREACHABLE — CHECK CONNECTION");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const loadError = !auth.token ? false : !auth.isProfileLoading && !auth.profile;
 
   const profile = auth.profile
@@ -72,7 +125,24 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
         data={profile ?? undefined}
         inventory={inventory}
         isInventoryLoading={isInventoryLoading}
+        onSelectItem={handleSelectItem}
       />
+      {selectedItem && (
+        <ListItemForSale
+          item={{
+            itemName: selectedItem.name,
+            itemImageUrl: selectedItem.imageUrl,
+            itemRarity: selectedItem.rarity,
+            blockRef: "SEC_GRID_9 // BLOCK_884",
+          }}
+          priceValue={priceValue}
+          onPriceChange={setPriceValue}
+          onSubmit={handleSubmitListing}
+          onClose={handleCloseModal}
+          isSubmitting={isSubmitting}
+          errorMessage={submitError ?? undefined}
+        />
+      )}
     </div>
   );
 }

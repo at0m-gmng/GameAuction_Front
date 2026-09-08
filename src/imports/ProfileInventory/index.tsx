@@ -227,11 +227,15 @@ function ItemCardHudCorners() {
   );
 }
 
-function InventoryItemCard({ item }: { item: ProfileInventoryItem }) {
+function InventoryItemCard({ item, onSelect }: { item: ProfileInventoryItem; onSelect?: (item: ProfileInventoryItem) => void }) {
   const { color, background } = rarityColors(item.rarity);
 
   return (
-    <div className="bg-[#121212] content-stretch flex flex-col gap-[12px] items-center p-[10px] relative shrink-0 w-[92px]" data-name="item-card">
+    <div
+      className="bg-[#121212] content-stretch flex flex-col gap-[12px] items-center p-[10px] relative shrink-0 w-[92px] cursor-pointer"
+      onClick={() => onSelect?.(item)}
+      data-name="item-card"
+    >
       <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
       <ItemCardHudCorners />
       <div className="h-[140px] relative shrink-0 w-full flex items-center justify-center" data-name="item-thumb">
@@ -287,7 +291,15 @@ function InventoryEmptyState({ label }: { label: string }) {
   );
 }
 
-function InventoryColumn({ items, isLoading }: { items: ProfileInventoryItem[]; isLoading: boolean }) {
+function InventoryColumn({
+  items,
+  isLoading,
+  onSelectItem,
+}: {
+  items: ProfileInventoryItem[];
+  isLoading: boolean;
+  onSelectItem?: (item: ProfileInventoryItem) => void;
+}) {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
 
   const categories = Array.from(new Set(items.map((item) => item.category))).sort((a, b) => a - b);
@@ -305,7 +317,7 @@ function InventoryColumn({ items, isLoading }: { items: ProfileInventoryItem[]; 
       ) : (
         <div className="content-start flex flex-wrap gap-[24px] items-start relative shrink-0 w-full" data-name="Frame">
           {visible.map((item) => (
-            <InventoryItemCard key={item.itemId} item={item} />
+            <InventoryItemCard key={item.itemId} item={item} onSelect={onSelectItem} />
           ))}
         </div>
       )}
@@ -328,10 +340,18 @@ function HistoryColumn() {
   );
 }
 
-function SplitLayoutRow({ inventory, isInventoryLoading }: { inventory: ProfileInventoryItem[]; isInventoryLoading: boolean }) {
+function SplitLayoutRow({
+  inventory,
+  isInventoryLoading,
+  onSelectItem,
+}: {
+  inventory: ProfileInventoryItem[];
+  isInventoryLoading: boolean;
+  onSelectItem?: (item: ProfileInventoryItem) => void;
+}) {
   return (
     <div className="content-stretch flex gap-[32px] items-start relative shrink-0 w-full" data-name="split-layout-row">
-      <InventoryColumn items={inventory} isLoading={isInventoryLoading} />
+      <InventoryColumn items={inventory} isLoading={isInventoryLoading} onSelectItem={onSelectItem} />
       <HistoryColumn />
     </div>
   );
@@ -341,15 +361,17 @@ function ProfileBody({
   data,
   inventory,
   isInventoryLoading,
+  onSelectItem,
 }: {
   data: ProfileData;
   inventory: ProfileInventoryItem[];
   isInventoryLoading: boolean;
+  onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
     <div className="content-stretch flex flex-col gap-[32px] items-start p-[48px] relative shrink-0 w-full" data-name="profile-body">
       <ProfileSummary data={data} />
-      <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} />
+      <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} onSelectItem={onSelectItem} />
     </div>
   );
 }
@@ -364,14 +386,16 @@ export default function ProfileInventory({
   data = DEFAULT_PROFILE_DATA,
   inventory = [],
   isInventoryLoading = false,
+  onSelectItem,
 }: {
   data?: ProfileData;
   inventory?: ProfileInventoryItem[];
   isInventoryLoading?: boolean;
+  onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative size-full" data-name="profile-inventory">
-      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} />
+      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} onSelectItem={onSelectItem} />
     </div>
   );
 }
