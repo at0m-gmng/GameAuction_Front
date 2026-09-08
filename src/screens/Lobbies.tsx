@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SharedTopNav } from "@/components/SharedTopNav";
 import OpenLobbies, { type LobbyListItem } from "@/imports/OpenLobbies/index";
-import { LOBBY_API_BASE_URL } from "@/lib/config";
+import { getOpenLobbies } from "@/lib/lobbyApi";
 import type { Page } from "@/lib/navigation";
 
 export function InteractiveLobbies({
@@ -17,7 +17,7 @@ export function InteractiveLobbies({
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`${LOBBY_API_BASE_URL}/api/lobbies`)
+    getOpenLobbies()
       .then((response) => (response.ok ? (response.json() as Promise<LobbyListItem[]>) : Promise.reject(response)))
       .then((data) => {
         if (!cancelled) setLobbies(data);

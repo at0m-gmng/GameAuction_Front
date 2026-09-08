@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/auth";
 import { SharedTopNav } from "@/components/SharedTopNav";
 import { useLobbySocket } from "@/hooks/useLobbySocket";
-import { LOBBY_API_BASE_URL } from "@/lib/config";
 import { formatBalance, formatTimeLeft } from "@/lib/format";
+import { getLobby, joinLobby, leaveLobby, leaveLobbyBeacon, placeBid } from "@/lib/lobbyApi";
 import type { Page } from "@/lib/navigation";
 import AuctionResult from "@/imports/AuctionResult/index";
 import LobbyAuction, { type AuctionLogEntry, type AuctionPlayerSlot } from "@/imports/LobbyAuction/index";
@@ -68,9 +68,7 @@ export function InteractiveLobbyDetail({
   const refetch = useCallback(() => {
     if (!auth.token) return;
 
-    fetch(`${LOBBY_API_BASE_URL}/api/lobbies/${lobbyId}`, {
-      headers: { Authorization: `Bearer ${auth.token}` },
-    })
+    getLobby(lobbyId, auth.token)
       .then((response) => (response.ok ? (response.json() as Promise<LobbyDetailsDto>) : Promise.reject(response)))
       .then(setLobby)
       .catch((error: unknown) => console.error("Failed to load lobby:", error));
@@ -85,31 +83,23 @@ export function InteractiveLobbyDetail({
   useEffect(() => {
     if (!auth.token) return;
 
-    fetch(`${LOBBY_API_BASE_URL}/api/lobbies/${lobbyId}/join`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${auth.token}` },
-    })
+    joinLobby(lobbyId, auth.token)
       .catch((error: unknown) => console.error("Failed to join lobby:", error))
       .finally(refetch);
   }, [lobbyId, auth.token, refetch]);
 
-  // NOTE: keepalive lets this survive both SPA navigation-away (effect cleanup)
-  // and a real tab close/refresh (beforeunload) — a plain fetch gets cancelled in both cases.
+  // NOTE: beforeunload can't wait for retries (page may vanish) so it gets a single
+  // keepalive shot; SPA nav-away (cleanup) has time, so it uses the retrying call.
   useEffect(() => {
     if (!auth.token) return;
+    const token = auth.token;
 
-    const leave = () => {
-      fetch(`${LOBBY_API_BASE_URL}/api/lobbies/${lobbyId}/leave`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${auth.token}` },
-        keepalive: true,
-      }).catch(() => {});
-    };
+    const onBeforeUnload = () => leaveLobbyBeacon(lobbyId, token);
 
-    window.addEventListener("beforeunload", leave);
+    window.addEventListener("beforeunload", onBeforeUnload);
     return () => {
-      window.removeEventListener("beforeunload", leave);
-      leave();
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      leaveLobby(lobbyId, token).catch(() => {});
     };
   }, [lobbyId, auth.token]);
 
@@ -135,11 +125,7 @@ export function InteractiveLobbyDetail({
     setSubmitError(null);
 
     try {
-      const response = await fetch(`${LOBBY_API_BASE_URL}/api/lobbies/${lobbyId}/bids`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
-        body: JSON.stringify({ amount }),
-      });
+      const response = await placeBid(lobbyId, auth.token, amount);
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
