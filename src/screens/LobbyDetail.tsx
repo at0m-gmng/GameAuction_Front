@@ -74,8 +74,7 @@ export function InteractiveLobbyDetail({
       .catch((error: unknown) => console.error("Failed to load lobby:", error));
   }, [lobbyId, auth.token]);
 
-  // NOTE: fetch runs immediately, not after join — join is a second, parallel
-  // round-trip; waiting for it first doubled the time before anything painted.
+  // NOTE: fetch идёт сразу, не после join — join отдельный параллельный запрос, ждать его первым удвоило бы задержку.
   useEffect(() => {
     refetch();
   }, [refetch]);
@@ -88,8 +87,7 @@ export function InteractiveLobbyDetail({
       .finally(refetch);
   }, [lobbyId, auth.token, refetch]);
 
-  // NOTE: beforeunload can't wait for retries (page may vanish) so it gets a single
-  // keepalive shot; SPA nav-away (cleanup) has time, so it uses the retrying call.
+  // NOTE: beforeunload не может ждать ретраи (страница может исчезнуть) — один keepalive; уход по SPA — с ретраями.
   useEffect(() => {
     if (!auth.token) return;
     const token = auth.token;
@@ -105,8 +103,7 @@ export function InteractiveLobbyDetail({
 
   useLobbySocket(lobbyId, refetch);
 
-  // NOTE: сервер завершает аукцион лениво при чтении — когда таймер вышел, а статус всё ещё Bidding,
-  // опрашиваем раз в секунду, чтобы сервер переключил его в Completed и показался экран результата.
+  // NOTE: сервер завершает аукцион лениво при чтении — опрашиваем, чтобы он переключил статус в Completed.
   useEffect(() => {
     if (lobby?.status !== 200) return;
 
@@ -165,10 +162,11 @@ export function InteractiveLobbyDetail({
   }
 
   if (lobby.status !== 100 && lobby.status !== 200) {
+    // NOTE: победа определяется по winnerId, не по текущему участию — иначе экран победы не покажется вышедшему.
+    const didWin = myPlayerId != null && lobby.winnerId === myPlayerId;
     const wasParticipant = myPlayerId ? lobby.participants.includes(myPlayerId) : false;
 
-    if (wasParticipant && lobby.winnerId) {
-      const didWin = lobby.winnerId === myPlayerId;
+    if (lobby.winnerId && (didWin || wasParticipant)) {
       const item = { itemName: lobby.itemName, itemImageUrl: lobby.itemImageUrl, itemRarity: 0, blockRef: "SEC_GRID_9 // BLOCK_884" };
 
       return (

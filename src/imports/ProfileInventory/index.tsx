@@ -81,8 +81,7 @@ function IdentityBlock({ data }: { data: ProfileData }) {
   );
 }
 
-// NOTE: zeroed out, not faked — Lobby.API has no query that returns a
-// player's win/loss record yet. Wire these up for real once it does.
+// NOTE: обнулено, не выдумано — у Lobby.API пока нет запроса статистики побед/поражений; подключить, когда появится.
 function Stat() {
   return (
     <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0" data-name="stat">
@@ -325,8 +324,7 @@ function InventoryColumn({
   );
 }
 
-// NOTE: honest placeholder — no backend endpoint returns a player's auction
-// history yet. Replace with a real list once one exists.
+// NOTE: честная заглушка — эндпоинта истории аукционов пока нет на бэке; заменить, когда появится.
 function HistoryColumn() {
   return (
     <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-[420px]" data-name="history-column">

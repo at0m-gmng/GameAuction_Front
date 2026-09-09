@@ -6,9 +6,7 @@ import type { Page } from "@/lib/navigation";
 export function InteractiveLanding({ onNavigate }: { onNavigate: (p: Page) => void }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  // NOTE: only CTAs buried in the raw Figma hero markup are matched by text
-  // here — real nav (CATALOG/LOBBIES/PROFILE) is handled by SharedTopNav's
-  // own onClick buttons below, not by this click-anywhere-and-guess hack.
+  // NOTE: по тексту ищутся только CTA из сырой Figma-разметки — настоящая навигация через onClick у SharedTopNav.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;

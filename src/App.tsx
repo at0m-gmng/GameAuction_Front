@@ -9,9 +9,7 @@ import { InteractiveProfile } from "@/screens/Profile";
 import type { Page } from "@/lib/navigation";
 import { type AnimConfig, type TransitionState, defaultConfig, getAnimationNames } from "@/lib/transitions";
 
-// NOTE: sessionStorage, not localStorage — a refresh should keep you where
-// you were, but reopening the app days later should still start at the
-// marketing landing page, not silently resume some old session.
+// NOTE: sessionStorage, не localStorage — обновление страницы сохраняет сессию, но открытие через дни начинает заново.
 const PAGE_STORAGE_KEY = "nexus_page";
 const LOBBY_ID_STORAGE_KEY = "nexus_selected_lobby_id";
 const VALID_PAGES: readonly Page[] = ["landing", "lobbies", "login", "catalog", "profile", "lobby-detail"];

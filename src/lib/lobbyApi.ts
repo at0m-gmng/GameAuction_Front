@@ -3,8 +3,7 @@ import { LOBBY_API_BASE_URL } from "@/lib/config";
 const RETRY_ATTEMPTS = 3;
 const RETRY_BASE_DELAY_MS = 1000;
 
-// NOTE: Lobby.API — Render free-тариф, засыпает после простоя; первый запрос может не достучаться.
-// Ретраим только сетевые сбои (fetch throws), не HTTP-ошибки — те несут смысл (400 и т.п.) и должны доходить сразу.
+// NOTE: Lobby.API на бесплатном тарифе Render и засыпает при простое — ретраим только сетевые сбои, не HTTP-ошибки.
 async function fetchWithRetry(input: string, init: RequestInit): Promise<Response> {
   for (let attempt = 0; ; attempt++) {
     try {

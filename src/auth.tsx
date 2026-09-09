@@ -3,12 +3,7 @@ import { IDENTITY_API_BASE_URL } from "@/lib/config";
 
 export const API_BASE_URL = IDENTITY_API_BASE_URL;
 
-// TODO: token lives here in localStorage (XSS-readable) and expires after
-// Jwt:ExpiryMinutes on the backend (currently 60 min) — so today's real
-// session length is "1 hour", not "however long localStorage holds it".
-// Proper fix is a short-lived access token + refresh token in an httpOnly
-// cookie, not just storage choice or bumping expiry. Deferred with the user
-// to a dedicated TODO-cleanup pass; see JwtSettings.ExpiryMinutes on the backend.
+// TODO: токен в localStorage (уязвим для XSS) — решение: короткоживущий access + refresh token в httpOnly cookie.
 const TOKEN_KEY = "nexus_token";
 
 export interface PlayerProfile {
