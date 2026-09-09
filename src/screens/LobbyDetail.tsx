@@ -105,15 +105,21 @@ export function InteractiveLobbyDetail({
 
   useLobbySocket(lobbyId, refetch);
 
+  // NOTE: сервер завершает аукцион лениво при чтении — когда таймер вышел, а статус всё ещё Bidding,
+  // опрашиваем раз в секунду, чтобы сервер переключил его в Completed и показался экран результата.
   useEffect(() => {
     if (lobby?.status !== 200) return;
 
-    const interval = setInterval(() => setTick((t) => t + 1), 1000);
+    const endsAt = lobby.endsAt;
+    const interval = setInterval(() => {
+      setTick((t) => t + 1);
+      if (endsAt && new Date(endsAt).getTime() <= Date.now()) refetch();
+    }, 1000);
     return () => clearInterval(interval);
-  }, [lobby?.status]);
+  }, [lobby?.status, lobby?.endsAt, refetch]);
 
   const handleSubmitBid = async () => {
-    if (!auth.token) return;
+    if (!auth.token || isSubmitting) return;
 
     const amount = Number(bidValue);
     if (!Number.isFinite(amount) || amount <= 0) {
