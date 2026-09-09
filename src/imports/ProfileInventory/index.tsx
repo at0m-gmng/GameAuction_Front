@@ -21,6 +21,16 @@ export interface ProfileInventoryItem {
   acquiredAt: string;
 }
 
+export interface AuctionHistoryItem {
+  lobbyId: string;
+  itemName: string;
+  itemImageUrl: string | null;
+  itemRarity: number;
+  finalPrice: number;
+  won: boolean;
+  endedAt: string | null;
+}
+
 function HudCorner() {
   return (
     <div className="absolute content-stretch flex items-start left-0 overflow-clip size-[12px] top-0" data-name="hud-corner">
@@ -328,16 +338,48 @@ function InventoryColumn({
   );
 }
 
-// NOTE: честная заглушка — эндпоинта истории аукционов пока нет на бэке; заменить, когда появится.
-function HistoryColumn() {
+function HistoryRow({ entry }: { entry: AuctionHistoryItem }) {
+  const rarity = rarityColors(entry.itemRarity);
+  const outcomeColor = entry.won ? "#ffb000" : "#f33";
+
+  return (
+    <div className="bg-[#121212] border border-[#2a2a2a] border-solid flex items-center gap-[12px] w-full" style={{ padding: 12 }} data-name="history-row">
+      <div className="relative shrink-0 flex items-center justify-center" style={{ width: 40, height: 40, border: `1px solid ${rarity.color}`, borderRadius: 2, overflow: "hidden" }}>
+        {entry.itemImageUrl ? (
+          <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={entry.itemImageUrl} />
+        ) : (
+          <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 7, color: "#444" }}>N/A</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-[2px] flex-[1_0_0] min-w-px">
+        <p className="font-['Geist_Mono:Bold',sans-serif] font-bold text-[12px] text-[#e0e0e0] truncate">{entry.itemName}</p>
+        <p className="font-['Geist_Mono:Regular',sans-serif] text-[10px]" style={{ color: rarity.color }}>{formatRarityLabel(entry.itemRarity)}</p>
+      </div>
+      <div className="flex flex-col gap-[2px] items-end shrink-0">
+        <p className="font-['Unbounded:Bold',sans-serif] font-bold text-[10px]" style={{ color: outcomeColor }}>{entry.won ? "WON" : "LOST"}</p>
+        <p className="font-['Geist_Mono:Bold',sans-serif] font-bold text-[12px]" style={{ color: outcomeColor }}>{formatCompactBalance(entry.finalPrice)}</p>
+      </div>
+    </div>
+  );
+}
+
+function HistoryColumn({ history }: { history: AuctionHistoryItem[] }) {
   return (
     <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-[420px]" data-name="history-column">
       <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[16px] whitespace-nowrap">AUCTION HISTORY</p>
-      <div className="bg-[#121212] border border-[#2a2a2a] border-solid flex items-center justify-center w-full" style={{ minHeight: 120, padding: 32 }}>
-        <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#555", textAlign: "center" }}>
-          {">> NO AUCTION ACTIVITY YET"}
-        </p>
-      </div>
+      {history.length === 0 ? (
+        <div className="bg-[#121212] border border-[#2a2a2a] border-solid flex items-center justify-center w-full" style={{ minHeight: 120, padding: 32 }}>
+          <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#555", textAlign: "center" }}>
+            {">> NO AUCTION ACTIVITY YET"}
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-[8px] w-full">
+          {history.map((entry) => (
+            <HistoryRow key={entry.lobbyId} entry={entry} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -345,16 +387,18 @@ function HistoryColumn() {
 function SplitLayoutRow({
   inventory,
   isInventoryLoading,
+  history,
   onSelectItem,
 }: {
   inventory: ProfileInventoryItem[];
   isInventoryLoading: boolean;
+  history: AuctionHistoryItem[];
   onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
     <div className="content-stretch flex gap-[32px] items-start relative shrink-0 w-full" data-name="split-layout-row">
       <InventoryColumn items={inventory} isLoading={isInventoryLoading} onSelectItem={onSelectItem} />
-      <HistoryColumn />
+      <HistoryColumn history={history} />
     </div>
   );
 }
@@ -363,17 +407,19 @@ function ProfileBody({
   data,
   inventory,
   isInventoryLoading,
+  history,
   onSelectItem,
 }: {
   data: ProfileData;
   inventory: ProfileInventoryItem[];
   isInventoryLoading: boolean;
+  history: AuctionHistoryItem[];
   onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
     <div className="content-stretch flex flex-col gap-[32px] items-start p-[48px] relative shrink-0 w-full" data-name="profile-body">
       <ProfileSummary data={data} />
-      <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} onSelectItem={onSelectItem} />
+      <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} history={history} onSelectItem={onSelectItem} />
     </div>
   );
 }
@@ -390,16 +436,18 @@ export default function ProfileInventory({
   data = DEFAULT_PROFILE_DATA,
   inventory = [],
   isInventoryLoading = false,
+  history = [],
   onSelectItem,
 }: {
   data?: ProfileData;
   inventory?: ProfileInventoryItem[];
   isInventoryLoading?: boolean;
+  history?: AuctionHistoryItem[];
   onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative size-full" data-name="profile-inventory">
-      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} onSelectItem={onSelectItem} />
+      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} history={history} onSelectItem={onSelectItem} />
     </div>
   );
 }

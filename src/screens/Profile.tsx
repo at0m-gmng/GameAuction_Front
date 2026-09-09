@@ -3,9 +3,9 @@ import { useAuth } from "@/auth";
 import { SharedTopNav } from "@/components/SharedTopNav";
 import { CATALOG_API_BASE_URL } from "@/lib/config";
 import { formatBalance, formatMemberSince } from "@/lib/format";
-import { getMyAuctionStats } from "@/lib/lobbyApi";
+import { getMyAuctionHistory, getMyAuctionStats } from "@/lib/lobbyApi";
 import type { Page } from "@/lib/navigation";
-import ProfileInventory, { type ProfileInventoryItem } from "@/imports/ProfileInventory/index";
+import ProfileInventory, { type AuctionHistoryItem, type ProfileInventoryItem } from "@/imports/ProfileInventory/index";
 import ListItemForSale from "@/imports/ListItemForSale/index";
 
 interface PlayerAuctionStatsDto {
@@ -15,9 +15,11 @@ interface PlayerAuctionStatsDto {
 
 export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => void }) {
   const auth = useAuth();
+  const refreshProfile = auth.refreshProfile;
   const [inventory, setInventory] = useState<ProfileInventoryItem[]>([]);
   const [isInventoryLoading, setIsInventoryLoading] = useState(false);
   const [auctionStats, setAuctionStats] = useState<PlayerAuctionStatsDto>({ wins: 0, losses: 0 });
+  const [auctionHistory, setAuctionHistory] = useState<AuctionHistoryItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<ProfileInventoryItem | null>(null);
   const [priceValue, setPriceValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,10 +74,22 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
       })
       .catch((error: unknown) => console.error("Failed to load auction stats:", error));
 
+    getMyAuctionHistory(auth.token)
+      .then((response) => (response.ok ? (response.json() as Promise<AuctionHistoryItem[]>) : Promise.reject(response)))
+      .then((data) => {
+        if (!cancelled) setAuctionHistory(data);
+      })
+      .catch((error: unknown) => console.error("Failed to load auction history:", error));
+
     return () => {
       cancelled = true;
     };
   }, [auth.token]);
+
+  // NOTE: освежаем профиль при заходе — баланс мог измениться после аукциона на другом экране.
+  useEffect(() => {
+    refreshProfile();
+  }, [refreshProfile]);
 
   const handleSelectItem = (item: ProfileInventoryItem) => {
     setSelectedItem(item);
@@ -151,6 +165,7 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
         data={profile ?? undefined}
         inventory={inventory}
         isInventoryLoading={isInventoryLoading}
+        history={auctionHistory}
         onSelectItem={handleSelectItem}
       />
       {selectedItem && (

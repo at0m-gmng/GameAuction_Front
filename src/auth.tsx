@@ -21,6 +21,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   register: (nickname: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  refreshProfile: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -105,8 +106,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
   };
 
+  const refreshProfile = useCallback(() => {
+    if (token) fetchProfile(token);
+  }, [token, fetchProfile]);
+
   return (
-    <AuthContext.Provider value={{ token, profile, isProfileLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ token, profile, isProfileLoading, login, register, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -108,7 +108,7 @@ function HudCorner3() {
 
 const SYSTEM_LOG_LINES: { text: string; color: string }[] = [
   { text: ">> CONNECTING TO MATRIX DEPLOYMENT SITE...", color: "#ffb000" },
-  { text: ">> HANDSHAKE COMPLETED. 48 LOBBIES ACTIVE.", color: "#e0e0e0" },
+  { text: ">> HANDSHAKE COMPLETED. 48 AUCTIONS ACTIVE.", color: "#e0e0e0" },
   { text: ">> ENCRYPTION SCHEME: DEUS-EX-CHIPHER-7000", color: "#888" },
   { text: ">> AUTHENTICATING NODE... OK", color: "#e0e0e0" },
   { text: ">> SYNCING PRICE FEED WITH GLOBAL MARKET", color: "#888" },

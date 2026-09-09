@@ -104,6 +104,11 @@ export function InteractiveLobbyDetail({
 
   useLobbySocket(lobbyId, refetch);
 
+  // NOTE: аукцион завершился — освежаем профиль, чтобы баланс победителя обновился без перезагрузки страницы.
+  useEffect(() => {
+    if (lobby?.status === 300) auth.refreshProfile();
+  }, [lobby?.status, auth.refreshProfile]);
+
   // NOTE: сервер завершает аукцион лениво при чтении — опрашиваем, чтобы он переключил статус в Completed.
   useEffect(() => {
     if (lobby?.status !== 200) return;
@@ -157,7 +162,7 @@ export function InteractiveLobbyDetail({
     return (
       <div style={{ width: "100%", minHeight: "100%", display: "flex", flexDirection: "column" }}>
         <SharedTopNav active="lobbies" onNavigate={onNavigate} />
-        <p style={{ padding: 48, fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 12, color: "#555" }}>{">> LOADING LOBBY..."}</p>
+        <p style={{ padding: 48, fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 12, color: "#555" }}>{">> LOADING AUCTION..."}</p>
       </div>
     );
   }

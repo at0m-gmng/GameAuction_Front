@@ -3,13 +3,7 @@ import { formatBalance } from "@/lib/format";
 import type { Page } from "@/lib/navigation";
 
 /**
- * Top navigation bar used across every interactive screen. Renders real
- * <button onClick> handlers — not text-matching click hacks — so it works
- * identically regardless of which screen it's mounted on.
- *
- * `minimal` renders just the logo (used on Landing, which is the public
- * entry/marketing page and intentionally doesn't expose nav links or the
- * account controls).
+ * Верхняя навигация всех интерактивных экранов; minimal — только логотип (для Landing).
  */
 export function SharedTopNav({
   active,
@@ -30,7 +24,7 @@ export function SharedTopNav({
 
   const navItems: { label: string; page: Page }[] = [
     { label: "CATALOG", page: "catalog" },
-    { label: "LOBBIES", page: "lobbies" },
+    { label: "AUCTIONS", page: "lobbies" },
     { label: "PROFILE", page: "profile" },
   ];
 

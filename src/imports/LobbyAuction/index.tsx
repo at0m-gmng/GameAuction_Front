@@ -80,7 +80,7 @@ function StatusBanner({ data }: { data: LobbyAuctionData }) {
   return (
     <div className="bg-[#181818] border-[#2a2a2a] border-b border-solid content-stretch flex h-[56px] items-center justify-between px-[48px] relative shrink-0 w-full" data-name="lobby-status-banner">
       <div className="content-stretch flex gap-[12px] items-center relative shrink-0" data-name="lobby-id-group">
-        <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap">{`LOBBY ID: // ${data.lobbyCode}`}</p>
+        <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap">{`AUCTION ID: // ${data.lobbyCode}`}</p>
         <div className="bg-[#2a2a2a] h-[16px] relative shrink-0 w-px" />
         <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[12px] text-white whitespace-nowrap">
           {`ITEM: ${data.itemName.toUpperCase()}`}

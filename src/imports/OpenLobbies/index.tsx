@@ -20,9 +20,9 @@ function TitleHeader() {
       <div className="content-stretch flex gap-[8px] items-center relative shrink-0 font-['Geist_Mono:Regular',sans-serif] text-[11px] whitespace-nowrap">
         <span className="text-[#888]">NEXUS</span>
         <span className="text-[#888]">{">"}</span>
-        <span className="text-[#ffb000]">LOBBIES</span>
+        <span className="text-[#ffb000]">AUCTIONS</span>
       </div>
-      <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[28px] whitespace-nowrap">ACTIVE LOBBIES</p>
+      <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[28px] whitespace-nowrap">AUCTIONS</p>
       <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#e0e0e0] text-[14px] whitespace-nowrap">Join players in real time and bid for high-grade cybernetic salvage.</p>
     </div>
   );
@@ -166,7 +166,7 @@ function ColAction({ status, onEnter }: { status: number; onEnter?: () => void }
           className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[12px] uppercase whitespace-nowrap"
           style={{ color: isLive ? "#0a0a0a" : "#ffb000" }}
         >
-          ENTER LOBBY
+          ENTER AUCTION
         </p>
       </button>
     </div>
@@ -221,11 +221,11 @@ function LobbiesTable({
       <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
       <TableHeader />
       {isLoading ? (
-        <EmptyState label="LOADING LOBBIES..." />
+        <EmptyState label="LOADING AUCTIONS..." />
       ) : allEmpty ? (
-        <EmptyState label="NO ACTIVE LOBBIES YET" />
+        <EmptyState label="NO AUCTIONS YET" />
       ) : lobbies.length === 0 ? (
-        <EmptyState label="NO LOBBIES IN THIS STATUS" />
+        <EmptyState label="NO AUCTIONS IN THIS STATUS" />
       ) : (
         <TableBody lobbies={lobbies} onEnterLobby={onEnterLobby} />
       )}
