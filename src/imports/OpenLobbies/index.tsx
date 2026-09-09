@@ -10,6 +10,7 @@ export interface LobbyListItem {
   status: number;
   slotsTaken: number;
   maxSlots: number;
+  bidderCount: number;
   currentBid: number;
   endsAt: string | null;
 }
@@ -106,7 +107,18 @@ function PipsRow({ slotsTaken, maxSlots }: { slotsTaken: number; maxSlots: numbe
   );
 }
 
-function ColSlots({ slotsTaken, maxSlots }: { slotsTaken: number; maxSlots: number }) {
+function ColSlots({ status, slotsTaken, maxSlots, bidderCount }: { status: number; slotsTaken: number; maxSlots: number; bidderCount: number }) {
+  // NOTE: у завершённого аукциона показываем не слоты лобби, а число игроков, сделавших ставки.
+  if (status === 300) {
+    return (
+      <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
+        <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">
+          {`BIDDERS: ${bidderCount}`}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
       <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">
@@ -178,7 +190,7 @@ function LobbyRow({ lobby, onEnterLobby }: { lobby: LobbyListItem; onEnterLobby?
     <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
       <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
       <ColItem name={lobby.itemName} imageUrl={lobby.itemImageUrl} />
-      <ColSlots slotsTaken={lobby.slotsTaken} maxSlots={lobby.maxSlots} />
+      <ColSlots status={lobby.status} slotsTaken={lobby.slotsTaken} maxSlots={lobby.maxSlots} bidderCount={lobby.bidderCount} />
       <ColStatus status={lobby.status} />
       <ColBid currentBid={lobby.currentBid} />
       <ColTimer status={lobby.status} endsAt={lobby.endsAt} />
