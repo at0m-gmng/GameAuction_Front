@@ -61,6 +61,7 @@ export function ItemShowcase({
   itemImageUrl,
   badgeLabel,
   subheading,
+  accentColor,
 }: {
   tone: ShowcaseTone;
   size?: "large" | "compact";
@@ -68,9 +69,23 @@ export function ItemShowcase({
   itemImageUrl: string | null;
   badgeLabel: string;
   subheading?: { text: string; color: string };
+  accentColor?: string;
 }) {
-  const s = TONE_STYLES[tone];
   const d = SIZE_STYLES[size];
+
+  // NOTE: accentColor задаёт цвет по редкости (окно продажи); без него — цвета tone (победа/проигрыш аукциона).
+  const base = TONE_STYLES[tone];
+  const s: ToneStyle = accentColor
+    ? {
+        ...base,
+        glowColor: accentColor,
+        frameBorder: accentColor,
+        badgeBackground: `${accentColor}22`,
+        badgeBorder: accentColor,
+        badgeColor: accentColor,
+        headingColor: accentColor,
+      }
+    : base;
 
   return (
     <>

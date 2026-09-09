@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ItemShowcase } from "@/components/ItemShowcase";
-import { formatRarityLabel } from "@/lib/format";
+import { formatRarityLabel, rarityColors } from "@/lib/format";
 
 export interface ListItemForSaleItem {
   itemName: string;
@@ -79,6 +79,7 @@ export default function ListItemForSale({
           itemName={item.itemName}
           itemImageUrl={item.itemImageUrl}
           badgeLabel={`★ ${formatRarityLabel(item.itemRarity)} ★`}
+          accentColor={rarityColors(item.itemRarity).color}
         />
 
         <div
