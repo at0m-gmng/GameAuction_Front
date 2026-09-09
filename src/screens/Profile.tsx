@@ -3,14 +3,21 @@ import { useAuth } from "@/auth";
 import { SharedTopNav } from "@/components/SharedTopNav";
 import { CATALOG_API_BASE_URL } from "@/lib/config";
 import { formatBalance, formatMemberSince } from "@/lib/format";
+import { getMyAuctionStats } from "@/lib/lobbyApi";
 import type { Page } from "@/lib/navigation";
 import ProfileInventory, { type ProfileInventoryItem } from "@/imports/ProfileInventory/index";
 import ListItemForSale from "@/imports/ListItemForSale/index";
+
+interface PlayerAuctionStatsDto {
+  wins: number;
+  losses: number;
+}
 
 export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => void }) {
   const auth = useAuth();
   const [inventory, setInventory] = useState<ProfileInventoryItem[]>([]);
   const [isInventoryLoading, setIsInventoryLoading] = useState(false);
+  const [auctionStats, setAuctionStats] = useState<PlayerAuctionStatsDto>({ wins: 0, losses: 0 });
   const [selectedItem, setSelectedItem] = useState<ProfileInventoryItem | null>(null);
   const [priceValue, setPriceValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,15 +45,32 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
         if (!cancelled) setInventory(data);
       })
       .catch((error: unknown) => {
-        // Network hiccup, CORS, or expired token — leave inventory empty
-        // rather than crash, but log it: a silently-empty inventory with no
-        // trace anywhere was exactly what made a real bug look like "the
-        // gift just isn't there".
+        // NOTE: сетевой сбой/CORS/просроченный токен — не падаем, но логируем; молча пустой инвентарь маскировал реальный баг.
         if (!cancelled) console.error("Failed to load inventory:", error);
       })
       .finally(() => {
         if (!cancelled) setIsInventoryLoading(false);
       });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [auth.token]);
+
+  useEffect(() => {
+    if (!auth.token) {
+      setAuctionStats({ wins: 0, losses: 0 });
+      return;
+    }
+
+    let cancelled = false;
+
+    getMyAuctionStats(auth.token)
+      .then((response) => (response.ok ? (response.json() as Promise<PlayerAuctionStatsDto>) : Promise.reject(response)))
+      .then((data) => {
+        if (!cancelled) setAuctionStats(data);
+      })
+      .catch((error: unknown) => console.error("Failed to load auction stats:", error));
 
     return () => {
       cancelled = true;
@@ -108,6 +132,8 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
         nickname: auth.profile.nickname,
         balanceLabel: formatBalance(auth.profile.balance),
         memberSinceLabel: formatMemberSince(auth.profile.createdAt),
+        totalWins: auctionStats.wins,
+        totalLosses: auctionStats.losses,
       }
     : null;
 

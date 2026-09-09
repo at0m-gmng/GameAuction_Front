@@ -19,6 +19,7 @@ interface LobbyDetailsDto {
   itemId: string;
   itemName: string;
   itemImageUrl: string | null;
+  itemRarity: number;
   startingPrice: number;
   status: number;
   maxSlots: number;
@@ -167,7 +168,7 @@ export function InteractiveLobbyDetail({
     const wasParticipant = myPlayerId ? lobby.participants.includes(myPlayerId) : false;
 
     if (lobby.winnerId && (didWin || wasParticipant)) {
-      const item = { itemName: lobby.itemName, itemImageUrl: lobby.itemImageUrl, itemRarity: 0, blockRef: "SEC_GRID_9 // BLOCK_884" };
+      const item = { itemName: lobby.itemName, itemImageUrl: lobby.itemImageUrl, itemRarity: lobby.itemRarity, blockRef: "SEC_GRID_9 // BLOCK_884" };
 
       return (
         <div style={{ width: "100%", minHeight: "100%", display: "flex", flexDirection: "column" }}>
@@ -177,8 +178,6 @@ export function InteractiveLobbyDetail({
               status="won"
               item={item}
               stats={{ finalBid: lobby.currentBid, totalBids: lobby.bids.length, participants: lobby.participants.length }}
-              onAddToInventory={() => onNavigate("profile")}
-              onBackToCatalog={() => onNavigate("catalog")}
             />
           ) : (
             <AuctionResult
@@ -189,8 +188,6 @@ export function InteractiveLobbyDetail({
                 winningBid: lobby.currentBid,
                 yourFinalBid: bidsByPlayer.get(myPlayerId ?? "") ?? 0,
               }}
-              onBrowseCatalog={() => onNavigate("catalog")}
-              onTryAgain={() => onNavigate("lobbies")}
             />
           )}
         </div>
@@ -239,7 +236,7 @@ export function InteractiveLobbyDetail({
           itemName: lobby.itemName,
           itemImageUrl: lobby.itemImageUrl,
           itemDescription: null,
-          itemRarity: 0,
+          itemRarity: lobby.itemRarity,
           itemCategory: null,
           currentBid: lobby.currentBid,
           currentBidderName: lobby.currentBidderId

@@ -6,6 +6,8 @@ export interface ProfileData {
   nickname: string;
   balanceLabel: string;
   memberSinceLabel: string;
+  totalWins: number;
+  totalLosses: number;
 }
 
 export interface ProfileInventoryItem {
@@ -81,40 +83,42 @@ function IdentityBlock({ data }: { data: ProfileData }) {
   );
 }
 
-// NOTE: обнулено, не выдумано — у Lobby.API пока нет запроса статистики побед/поражений; подключить, когда появится.
-function Stat() {
+function Stat({ wins }: { wins: number }) {
   return (
     <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0" data-name="stat">
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[10px]">TOTAL WINS</p>
-      <p className="font-['Geist_Mono:ExtraBold',sans-serif] font-extrabold relative shrink-0 text-[#ffb000] text-[24px]">0</p>
+      <p className="font-['Geist_Mono:ExtraBold',sans-serif] font-extrabold relative shrink-0 text-[#ffb000] text-[24px]">{wins}</p>
     </div>
   );
 }
 
-function Stat1() {
+function Stat1({ losses }: { losses: number }) {
   return (
     <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0" data-name="stat">
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[10px]">TOTAL LOSSES</p>
-      <p className="font-['Geist_Mono:ExtraBold',sans-serif] font-extrabold relative shrink-0 text-[#e0e0e0] text-[24px]">0</p>
+      <p className="font-['Geist_Mono:ExtraBold',sans-serif] font-extrabold relative shrink-0 text-[#e0e0e0] text-[24px]">{losses}</p>
     </div>
   );
 }
 
-function Stat2() {
+function Stat2({ winRate }: { winRate: number }) {
   return (
     <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0" data-name="stat">
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[10px]">WIN RATE</p>
-      <p className="font-['Geist_Mono:ExtraBold',sans-serif] font-extrabold relative shrink-0 text-[#ffb000] text-[24px]">0%</p>
+      <p className="font-['Geist_Mono:ExtraBold',sans-serif] font-extrabold relative shrink-0 text-[#ffb000] text-[24px]">{winRate}%</p>
     </div>
   );
 }
 
-function StatBlockContainer() {
+function StatBlockContainer({ data }: { data: ProfileData }) {
+  const totalGames = data.totalWins + data.totalLosses;
+  const winRate = totalGames > 0 ? Math.round((data.totalWins / totalGames) * 100) : 0;
+
   return (
     <div className="[word-break:break-word] content-stretch flex gap-[48px] items-start leading-[normal] relative shrink-0 whitespace-nowrap" data-name="stat-block-container">
-      <Stat />
-      <Stat1 />
-      <Stat2 />
+      <Stat wins={data.totalWins} />
+      <Stat1 losses={data.totalLosses} />
+      <Stat2 winRate={winRate} />
     </div>
   );
 }
@@ -124,7 +128,7 @@ function OperatorDetails({ data }: { data: ProfileData }) {
     <div className="content-stretch flex gap-[32px] items-center relative shrink-0 w-full" data-name="operator-details">
       <AvatarHexFrame />
       <IdentityBlock data={data} />
-      <StatBlockContainer />
+      <StatBlockContainer data={data} />
     </div>
   );
 }
@@ -378,6 +382,8 @@ const DEFAULT_PROFILE_DATA: ProfileData = {
   nickname: "OPERATOR_X",
   balanceLabel: "842,500 ₵",
   memberSinceLabel: "MEMBER SINCE // DEC_2025",
+  totalWins: 0,
+  totalLosses: 0,
 };
 
 export default function ProfileInventory({

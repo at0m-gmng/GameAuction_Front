@@ -1,5 +1,5 @@
 import { ItemShowcase } from "@/components/ItemShowcase";
-import { formatBalance, formatRarityLabel } from "@/lib/format";
+import { formatBalance, formatRarityLabel, rarityColors } from "@/lib/format";
 import imgWinnerAvatar from "./winner-avatar.png";
 
 export interface AuctionResultItem {
@@ -22,20 +22,8 @@ export interface LostStats {
 }
 
 type AuctionResultProps =
-  | {
-      status: "won";
-      item: AuctionResultItem;
-      stats: WonStats;
-      onAddToInventory?: () => void;
-      onBackToCatalog?: () => void;
-    }
-  | {
-      status: "lost";
-      item: AuctionResultItem;
-      stats: LostStats;
-      onBrowseCatalog?: () => void;
-      onTryAgain?: () => void;
-    };
+  | { status: "won"; item: AuctionResultItem; stats: WonStats }
+  | { status: "lost"; item: AuctionResultItem; stats: LostStats };
 
 function HudCorners({ color }: { color: string }) {
   const base = "absolute content-stretch flex items-start overflow-clip size-[12px]";
@@ -72,37 +60,8 @@ function StatBox({ label, value, color = "#e0e0e0" }: { label: string; value: st
   );
 }
 
-function ResultButton({
-  label,
-  variant,
-  onClick,
-}: {
-  label: string;
-  variant: "solid-amber" | "outline-amber" | "outline-red";
-  onClick?: () => void;
-}) {
-  const styles: Record<typeof variant, string> = {
-    "solid-amber": "bg-[#ffb000] border border-[#ffb000] border-solid text-[#0a0a0a]",
-    "outline-amber": "bg-[rgba(0,0,0,0)] border border-[#ffb000] border-solid text-[#ffb000]",
-    "outline-red": "bg-[rgba(0,0,0,0)] border border-[#f33] border-solid text-[#f33]",
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`content-stretch flex items-start px-[32px] py-[16px] relative shrink-0 cursor-pointer ${styles[variant]}`}
-    >
-      <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[12px] uppercase whitespace-nowrap">
-        {label}
-      </p>
-    </button>
-  );
-}
-
 /**
- * Общий экран результата аукциона — победа и поражение рендерятся одним
- * компонентом, ветвление по `status` меняет и данные, и способ отображения.
+ * Общий экран результата аукциона — победа/поражение рендерятся одним компонентом, ветвление по status.
  */
 export default function AuctionResult(props: AuctionResultProps) {
   const { status, item } = props;
@@ -128,6 +87,7 @@ export default function AuctionResult(props: AuctionResultProps) {
         itemImageUrl={item.itemImageUrl}
         badgeLabel={isWon ? `★ ${formatRarityLabel(item.itemRarity)} SALVAGE ★` : "SALVAGE SECURED BY COMPETING NODE"}
         subheading={{ text: isWon ? "[ ITEM IS YOURS ]" : "[ OUTBID ]", color: isWon ? "#fff" : "#f33" }}
+        accentColor={isWon ? rarityColors(item.itemRarity).color : undefined}
       />
 
       {props.status === "won" ? (
@@ -172,20 +132,6 @@ export default function AuctionResult(props: AuctionResultProps) {
           </div>
         </div>
       )}
-
-      <div className="content-stretch flex gap-[24px] items-start relative shrink-0" data-name="cta-row">
-        {props.status === "won" ? (
-          <>
-            <ResultButton label="ADD TO INVENTORY" variant="solid-amber" onClick={props.onAddToInventory} />
-            <ResultButton label="BACK TO CATALOG" variant="outline-amber" onClick={props.onBackToCatalog} />
-          </>
-        ) : (
-          <>
-            <ResultButton label="BROWSE CATALOG" variant="outline-amber" onClick={props.onBrowseCatalog} />
-            <ResultButton label="TRY AGAIN" variant="outline-red" onClick={props.onTryAgain} />
-          </>
-        )}
-      </div>
     </div>
   );
 }

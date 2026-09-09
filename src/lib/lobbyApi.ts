@@ -44,6 +44,10 @@ export function leaveLobbyBeacon(lobbyId: string, token: string): void {
   }).catch(() => {});
 }
 
+export function getMyAuctionStats(token: string): Promise<Response> {
+  return fetchWithRetry(`${LOBBY_API_BASE_URL}/api/lobbies/stats/me`, { headers: authHeaders(token) });
+}
+
 export function placeBid(lobbyId: string, token: string, amount: number): Promise<Response> {
   return fetchWithRetry(`${LOBBY_API_BASE_URL}/api/lobbies/${lobbyId}/bids`, {
     method: "POST",
