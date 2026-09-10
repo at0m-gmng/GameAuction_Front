@@ -141,7 +141,7 @@ export default function App() {
         ) : page === "login" ? (
           <InteractiveLogin onNavigate={navigate} onBack={goBack} />
         ) : page === "catalog" ? (
-          <InteractiveCatalog onNavigate={navigate} />
+          <InteractiveCatalog onNavigate={navigate} onEnterLobby={enterLobby} />
         ) : (
           <InteractiveProfile onNavigate={navigate} />
         )}

@@ -4,6 +4,7 @@ import { SharedTopNav } from "@/components/SharedTopNav";
 import { CATALOG_API_BASE_URL } from "@/lib/config";
 import { formatBalance, formatMemberSince } from "@/lib/format";
 import { getMyAuctionHistory, getMyAuctionStats } from "@/lib/lobbyApi";
+import { listItemForSale } from "@/lib/catalogApi";
 import type { Page } from "@/lib/navigation";
 import ProfileInventory, { type AuctionHistoryItem, type ProfileInventoryItem } from "@/imports/ProfileInventory/index";
 import ListItemForSale from "@/imports/ListItemForSale/index";
@@ -115,11 +116,7 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
     setSubmitError(null);
 
     try {
-      const response = await fetch(`${CATALOG_API_BASE_URL}/api/catalog/inventory/${selectedItem.itemId}/list-for-auction`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
-        body: JSON.stringify({ startingPrice }),
-      });
+      const response = await listItemForSale(selectedItem.itemId, auth.token, startingPrice);
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
