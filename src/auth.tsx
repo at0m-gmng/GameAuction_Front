@@ -85,6 +85,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token, fetchProfile]);
 
+  // NOTE: баланс меняется вне действий пользователя (выиграл аукцион, продали лот) — держим профиль свежим опросом.
+  useEffect(() => {
+    if (!token) return;
+
+    const interval = setInterval(() => fetchProfile(token), 10_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") fetchProfile(token);
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [token, fetchProfile]);
+
   const applyToken = (newToken: string) => {
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);

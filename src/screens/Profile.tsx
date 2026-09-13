@@ -159,12 +159,9 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
         throw new Error(data?.message || "LISTING REJECTED BY SERVER");
       }
 
-      setInventory((prev) =>
-        prev
-          .map((item) => (item.itemId === selectedItem.itemId ? { ...item, quantity: item.quantity - 1 } : item))
-          .filter((item) => item.quantity > 0)
-      );
       setSelectedItem(null);
+      refreshListings();
+      refreshInventory();
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message.toUpperCase() : "UPLINK UNREACHABLE — CHECK CONNECTION");
     } finally {
