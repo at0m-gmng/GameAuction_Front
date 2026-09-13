@@ -31,6 +31,14 @@ export interface AuctionHistoryItem {
   endedAt: string | null;
 }
 
+export interface ActiveListingItem {
+  itemId: string;
+  name: string;
+  imageUrl: string | null;
+  rarity: number;
+  startingPrice: number;
+}
+
 function HudCorner() {
   return (
     <div className="absolute content-stretch flex items-start left-0 overflow-clip size-[12px] top-0" data-name="hud-corner">
@@ -384,6 +392,75 @@ function HistoryColumn({ history }: { history: AuctionHistoryItem[] }) {
   );
 }
 
+function ListingRow({
+  item,
+  onWithdraw,
+  isWithdrawing,
+}: {
+  item: ActiveListingItem;
+  onWithdraw: () => void;
+  isWithdrawing: boolean;
+}) {
+  const rarity = rarityColors(item.rarity);
+
+  return (
+    <div className="bg-[#121212] border border-[#2a2a2a] border-solid flex items-center gap-[12px] w-full" style={{ padding: 12 }} data-name="listing-row">
+      <div className="relative shrink-0 flex items-center justify-center" style={{ width: 40, height: 40, border: `1px solid ${rarity.color}`, borderRadius: 2, overflow: "hidden" }}>
+        {item.imageUrl ? (
+          <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={item.imageUrl} />
+        ) : (
+          <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 7, color: "#444" }}>N/A</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-[2px] flex-[1_0_0] min-w-px">
+        <p className="font-['Geist_Mono:Bold',sans-serif] font-bold text-[12px] text-[#e0e0e0] truncate">{item.name}</p>
+        <p className="font-['Geist_Mono:Regular',sans-serif] text-[10px]" style={{ color: rarity.color }}>{formatRarityLabel(item.rarity)}</p>
+      </div>
+      <p className="font-['Geist_Mono:Bold',sans-serif] font-bold text-[12px] text-[#ffb000] shrink-0">{formatCompactBalance(item.startingPrice)}</p>
+      <button
+        type="button"
+        onClick={onWithdraw}
+        disabled={isWithdrawing}
+        className="border border-[#f33] border-solid px-[12px] py-[6px] shrink-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+        style={{ background: "transparent" }}
+      >
+        <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[10px] text-[#f33] uppercase whitespace-nowrap">
+          {isWithdrawing ? "..." : "WITHDRAW"}
+        </p>
+      </button>
+    </div>
+  );
+}
+
+function ActiveListingsSection({
+  listings,
+  onWithdraw,
+  withdrawingItemId,
+}: {
+  listings: ActiveListingItem[];
+  onWithdraw: (itemId: string) => void;
+  withdrawingItemId: string | null;
+}) {
+  return (
+    <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full" data-name="active-listings-section">
+      <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[16px] whitespace-nowrap">ACTIVE LISTINGS</p>
+      {listings.length === 0 ? (
+        <div className="bg-[#121212] border border-[#2a2a2a] border-solid flex items-center justify-center w-full" style={{ minHeight: 80, padding: 32 }}>
+          <p style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#555", textAlign: "center" }}>
+            {">> NO ACTIVE LISTINGS"}
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-[8px] w-full">
+          {listings.map((item) => (
+            <ListingRow key={item.itemId} item={item} onWithdraw={() => onWithdraw(item.itemId)} isWithdrawing={withdrawingItemId === item.itemId} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SplitLayoutRow({
   inventory,
   isInventoryLoading,
@@ -408,17 +485,24 @@ function ProfileBody({
   inventory,
   isInventoryLoading,
   history,
+  listings,
+  onWithdrawListing,
+  withdrawingItemId,
   onSelectItem,
 }: {
   data: ProfileData;
   inventory: ProfileInventoryItem[];
   isInventoryLoading: boolean;
   history: AuctionHistoryItem[];
+  listings: ActiveListingItem[];
+  onWithdrawListing: (itemId: string) => void;
+  withdrawingItemId: string | null;
   onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
     <div className="content-stretch flex flex-col gap-[32px] items-start p-[48px] relative shrink-0 w-full" data-name="profile-body">
       <ProfileSummary data={data} />
+      <ActiveListingsSection listings={listings} onWithdraw={onWithdrawListing} withdrawingItemId={withdrawingItemId} />
       <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} history={history} onSelectItem={onSelectItem} />
     </div>
   );
@@ -437,17 +521,32 @@ export default function ProfileInventory({
   inventory = [],
   isInventoryLoading = false,
   history = [],
+  listings = [],
+  onWithdrawListing = () => {},
+  withdrawingItemId = null,
   onSelectItem,
 }: {
   data?: ProfileData;
   inventory?: ProfileInventoryItem[];
   isInventoryLoading?: boolean;
   history?: AuctionHistoryItem[];
+  listings?: ActiveListingItem[];
+  onWithdrawListing?: (itemId: string) => void;
+  withdrawingItemId?: string | null;
   onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative size-full" data-name="profile-inventory">
-      <ProfileBody data={data} inventory={inventory} isInventoryLoading={isInventoryLoading} history={history} onSelectItem={onSelectItem} />
+      <ProfileBody
+        data={data}
+        inventory={inventory}
+        isInventoryLoading={isInventoryLoading}
+        history={history}
+        listings={listings}
+        onWithdrawListing={onWithdrawListing}
+        withdrawingItemId={withdrawingItemId}
+        onSelectItem={onSelectItem}
+      />
     </div>
   );
 }

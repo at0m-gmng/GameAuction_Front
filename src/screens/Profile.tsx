@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/auth";
 import { SharedTopNav } from "@/components/SharedTopNav";
 import { CATALOG_API_BASE_URL } from "@/lib/config";
 import { formatBalance, formatMemberSince } from "@/lib/format";
 import { getMyAuctionHistory, getMyAuctionStats } from "@/lib/lobbyApi";
-import { listItemForSale } from "@/lib/catalogApi";
+import { getMyListings, listItemForSale, unlistItem, type CatalogItem } from "@/lib/catalogApi";
 import type { Page } from "@/lib/navigation";
-import ProfileInventory, { type AuctionHistoryItem, type ProfileInventoryItem } from "@/imports/ProfileInventory/index";
+import ProfileInventory, {
+  type ActiveListingItem,
+  type AuctionHistoryItem,
+  type ProfileInventoryItem,
+} from "@/imports/ProfileInventory/index";
 import ListItemForSale from "@/imports/ListItemForSale/index";
 
 interface PlayerAuctionStatsDto {
@@ -21,6 +25,8 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
   const [isInventoryLoading, setIsInventoryLoading] = useState(false);
   const [auctionStats, setAuctionStats] = useState<PlayerAuctionStatsDto>({ wins: 0, losses: 0 });
   const [auctionHistory, setAuctionHistory] = useState<AuctionHistoryItem[]>([]);
+  const [listings, setListings] = useState<ActiveListingItem[]>([]);
+  const [withdrawingItemId, setWithdrawingItemId] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<ProfileInventoryItem | null>(null);
   const [priceValue, setPriceValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,34 +37,64 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.token]);
 
-  useEffect(() => {
+  const refreshInventory = useCallback(() => {
     if (!auth.token) {
       setInventory([]);
       return;
     }
 
-    let cancelled = false;
     setIsInventoryLoading(true);
 
     fetch(`${CATALOG_API_BASE_URL}/api/catalog/inventory`, {
       headers: { Authorization: `Bearer ${auth.token}` },
     })
       .then((response) => (response.ok ? (response.json() as Promise<ProfileInventoryItem[]>) : Promise.reject(response)))
-      .then((data) => {
-        if (!cancelled) setInventory(data);
-      })
-      .catch((error: unknown) => {
-        // NOTE: сетевой сбой/CORS/просроченный токен — не падаем, но логируем; молча пустой инвентарь маскировал реальный баг.
-        if (!cancelled) console.error("Failed to load inventory:", error);
-      })
-      .finally(() => {
-        if (!cancelled) setIsInventoryLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
+      .then(setInventory)
+      // NOTE: сетевой сбой/CORS/просроченный токен — не падаем, но логируем; молча пустой инвентарь маскировал реальный баг.
+      .catch((error: unknown) => console.error("Failed to load inventory:", error))
+      .finally(() => setIsInventoryLoading(false));
   }, [auth.token]);
+
+  useEffect(() => {
+    refreshInventory();
+  }, [refreshInventory]);
+
+  const refreshListings = useCallback(() => {
+    if (!auth.token) {
+      setListings([]);
+      return;
+    }
+
+    getMyListings(auth.token)
+      .then((response) => (response.ok ? (response.json() as Promise<CatalogItem[]>) : Promise.reject(response)))
+      .then((items) => setListings(items.map((item) => ({ itemId: item.id, name: item.name, imageUrl: item.imageUrl, rarity: item.rarity, startingPrice: item.startingPrice }))))
+      .catch((error: unknown) => console.error("Failed to load listings:", error));
+  }, [auth.token]);
+
+  useEffect(() => {
+    refreshListings();
+  }, [refreshListings]);
+
+  const handleWithdrawListing = async (itemId: string) => {
+    if (!auth.token) return;
+
+    setWithdrawingItemId(itemId);
+
+    try {
+      const response = await unlistItem(itemId, auth.token);
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || "WITHDRAWAL REJECTED BY SERVER");
+      }
+
+      refreshListings();
+      refreshInventory();
+    } catch (error) {
+      console.error("Failed to withdraw listing:", error);
+    } finally {
+      setWithdrawingItemId(null);
+    }
+  };
 
   useEffect(() => {
     if (!auth.token) {
@@ -163,6 +199,9 @@ export function InteractiveProfile({ onNavigate }: { onNavigate: (p: Page) => vo
         inventory={inventory}
         isInventoryLoading={isInventoryLoading}
         history={auctionHistory}
+        listings={listings}
+        onWithdrawListing={handleWithdrawListing}
+        withdrawingItemId={withdrawingItemId}
         onSelectItem={handleSelectItem}
       />
       {selectedItem && (

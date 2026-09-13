@@ -15,6 +15,17 @@ export function getCatalogItems(): Promise<Response> {
   return fetch(`${CATALOG_API_BASE_URL}/api/catalog/items?pageSize=100`);
 }
 
+export function getMyListings(token: string): Promise<Response> {
+  return fetch(`${CATALOG_API_BASE_URL}/api/catalog/my-listings`, { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export function unlistItem(itemId: string, token: string): Promise<Response> {
+  return fetch(`${CATALOG_API_BASE_URL}/api/catalog/inventory/${itemId}/unlist`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export function listItemForSale(itemId: string, token: string, startingPrice: number): Promise<Response> {
   return fetch(`${CATALOG_API_BASE_URL}/api/catalog/inventory/${itemId}/list-for-sale`, {
     method: "POST",
