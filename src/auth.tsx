@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { IDENTITY_API_BASE_URL } from "@/lib/config";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import { IDENTITY_API_BASE_URL, LOBBY_API_BASE_URL } from "@/lib/config";
 
 export const API_BASE_URL = IDENTITY_API_BASE_URL;
 
@@ -85,19 +86,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token, fetchProfile]);
 
-  // NOTE: баланс меняется вне действий пользователя (выиграл аукцион, продали лот) — держим профиль свежим опросом.
+  // NOTE: пуш вместо опроса — Lobby.API шлёт BalanceChanged адресно, когда баланс реально изменился.
   useEffect(() => {
     if (!token) return;
 
-    const interval = setInterval(() => fetchProfile(token), 10_000);
-    const onVisible = () => {
-      if (document.visibilityState === "visible") fetchProfile(token);
-    };
-    document.addEventListener("visibilitychange", onVisible);
+    const connection = new HubConnectionBuilder()
+      .withUrl(`${LOBBY_API_BASE_URL}/hubs/lobby`, { accessTokenFactory: () => token })
+      .withAutomaticReconnect()
+      .configureLogging(LogLevel.Warning)
+      .build();
+
+    connection.on("BalanceChanged", () => fetchProfile(token));
+    // NOTE: при обрыве связи пуш мог не дойти — на восстановлении один раз досинхронизируемся.
+    connection.onreconnected(() => fetchProfile(token));
+
+    connection.start().catch((error: unknown) => console.error("Balance socket failed to connect:", error));
 
     return () => {
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisible);
+      connection.stop().catch(() => {});
     };
   }, [token, fetchProfile]);
 

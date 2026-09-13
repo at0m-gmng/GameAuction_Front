@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { useAuth } from "@/auth";
 import { AnimPanel } from "@/dev/AnimPanel";
 import { InteractiveLanding } from "@/screens/Landing";
 import { InteractiveLobbies } from "@/screens/Lobbies";
@@ -21,7 +20,6 @@ function getPersistedPage(): Page {
 }
 
 export default function App() {
-  const { refreshProfile } = useAuth();
   const [page, setPage] = useState<Page>(getPersistedPage);
   const [selectedLobbyId, setSelectedLobbyId] = useState<string | null>(() => sessionStorage.getItem(LOBBY_ID_STORAGE_KEY));
   const [pendingPage, setPendingPage] = useState<Page | null>(null);
@@ -87,11 +85,6 @@ export default function App() {
   useEffect(() => {
     sessionStorage.setItem(PAGE_STORAGE_KEY, page);
   }, [page]);
-
-  // NOTE: освежаем баланс при каждой смене экрана — иначе он устаревает, если аукцион завершился без нас.
-  useEffect(() => {
-    refreshProfile();
-  }, [page, refreshProfile]);
 
   useEffect(() => {
     if (selectedLobbyId) sessionStorage.setItem(LOBBY_ID_STORAGE_KEY, selectedLobbyId);
