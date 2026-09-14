@@ -13,6 +13,7 @@
 - React 19 + TypeScript
 - Vite 8
 - Tailwind CSS v4
+- `@microsoft/signalr` — события аукциона и баланса в реальном времени
 - pnpm
 
 ## Разработка
@@ -34,6 +35,13 @@ pnpm build
 
 ## Бэкенд
 
-Базовые URL заданы в [`src/lib/config.ts`](src/lib/config.ts) (Identity.API, Catalog.API). CORS на бэкенде разрешает только `https://at0m-gmng.github.io` — локальный `pnpm dev` не сможет достучаться до задеплоенных сервисов напрямую из браузера.
+Базовые URL заданы в [`src/lib/config.ts`](src/lib/config.ts) (Identity.API, Catalog.API, Lobby.API). CORS на бэкенде разрешает только `https://at0m-gmng.github.io` — локальный `pnpm dev` не сможет достучаться до задеплоенных сервисов напрямую из браузера.
 
-Реально подключены к бэкенду: регистрация/вход и профиль ([`src/auth.tsx`](src/auth.tsx)), инвентарь на экране профиля ([`src/screens/Profile.tsx`](src/screens/Profile.tsx)). Экраны Catalog и Lobbies пока рисуют захардкоженные моковые данные — Lobby.API и генерация публичного каталога на бэкенде ещё не подключены (см. README бэкенда).
+Фронтенд полностью работает с реальным бэкендом, моков нет:
+
+- регистрация/вход и профиль — [`src/auth.tsx`](src/auth.tsx);
+- каталог и запуск аукциона по предмету — [`src/screens/Catalog.tsx`](src/screens/Catalog.tsx);
+- инвентарь, выставление на продажу и снятие с продажи — [`src/screens/Profile.tsx`](src/screens/Profile.tsx);
+- список лобби и живой экран аукциона со ставками через SignalR — [`src/screens/Lobbies.tsx`](src/screens/Lobbies.tsx), [`src/screens/LobbyDetail.tsx`](src/screens/LobbyDetail.tsx).
+
+Баланс обновляется пушем по SignalR в момент изменения (например, по итогам аукциона), без опроса — см. [`src/auth.tsx`](src/auth.tsx).
