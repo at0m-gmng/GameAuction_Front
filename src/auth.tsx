@@ -4,7 +4,7 @@ import { IDENTITY_API_BASE_URL, LOBBY_API_BASE_URL } from "@/lib/config";
 
 export const API_BASE_URL = IDENTITY_API_BASE_URL;
 
-// TODO: токен в localStorage (уязвим для XSS) — решение: короткоживущий access + refresh token в httpOnly cookie.
+// NOTE: токен в localStorage — осознанный компромисс демо (XSS-поверхность низкая); прод — httpOnly refresh.
 const TOKEN_KEY = "nexus_token";
 
 export interface PlayerProfile {
