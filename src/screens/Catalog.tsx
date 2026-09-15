@@ -81,7 +81,7 @@ export function InteractiveCatalog({ onNavigate, onEnterLobby }: { onNavigate: (
       <SharedTopNav active="catalog" onNavigate={onNavigate} />
 
       <div className="p-4 sm:p-12" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "flex", gap: 8, alignItems: "center", fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11 }}>
               <span style={{ color: "#888" }}>NEXUS</span>
@@ -90,7 +90,7 @@ export function InteractiveCatalog({ onNavigate, onEnterLobby }: { onNavigate: (
             </div>
             <p className="text-[22px] sm:text-[28px]" style={{ fontFamily: "'Unbounded:ExtraBold', sans-serif", fontWeight: 800, color: "#ffb000" }}>MARKET CATALOG</p>
           </div>
-          <div className="w-full sm:w-[360px]" style={{ background: "#121212", border: "1px solid rgba(212,175,55,0.25)", display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", boxSizing: "border-box" }}>
+          <div className="w-full xl:w-[360px]" style={{ background: "#121212", border: "1px solid rgba(212,175,55,0.25)", display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", boxSizing: "border-box" }}>
             <input
               type="text"
               placeholder="Search catalog / systems..."
