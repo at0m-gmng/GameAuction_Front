@@ -142,7 +142,7 @@ function ShowcasePanel({ data }: { data: LobbyAuctionData }) {
 
 function HudValues({ data }: { data: LobbyAuctionData }) {
   return (
-    <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-start relative shrink-0 w-full" data-name="hud-values">
+    <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-stretch sm:items-start relative shrink-0 w-full" data-name="hud-values">
       <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-px p-[24px] relative" data-name="highest-bid-hud">
         <HudCorner />
         <HudCorner3 />
@@ -317,7 +317,7 @@ export default function LobbyAuction({
       <StatusBanner data={data} />
       <div className="content-stretch flex flex-col gap-6 xl:flex-row xl:gap-[24px] items-start p-4 sm:p-8 xl:p-[48px] relative shrink-0 w-full" data-name="live-grid">
         <ShowcasePanel data={data} />
-        <div className="content-stretch flex flex-[1_0_0] flex-col gap-[24px] items-start min-w-px relative" data-name="center-bid-console">
+        <div className="content-stretch flex w-full xl:w-auto flex-[1_0_0] flex-col gap-[24px] items-start min-w-px relative" data-name="center-bid-console">
           <HudValues data={data} />
           <BidFeedPanel entries={data.transactionLog} />
           <BidController

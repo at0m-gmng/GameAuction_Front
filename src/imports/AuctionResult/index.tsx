@@ -91,7 +91,7 @@ export default function AuctionResult(props: AuctionResultProps) {
       />
 
       {props.status === "won" ? (
-        <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-start relative shrink-0 w-full max-w-[680px]" data-name="stats-panel-row">
+        <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-stretch sm:items-start relative shrink-0 w-full max-w-[680px]" data-name="stats-panel-row">
           <StatBox label="FINAL WINNING BID" value={formatBalance(props.stats.finalBid)} color="#ffb000" />
           <StatBox label="TRANS_LOG_DEPTH" value={`${props.stats.totalBids} BIDS`} color="#fff" />
           <StatBox label="COMPETING NODES" value={`${props.stats.participants} OPERATORS`} color="#fff" />
