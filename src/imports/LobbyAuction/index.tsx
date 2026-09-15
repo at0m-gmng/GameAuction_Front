@@ -142,8 +142,8 @@ function ShowcasePanel({ data }: { data: LobbyAuctionData }) {
 
 function HudValues({ data }: { data: LobbyAuctionData }) {
   return (
-    <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-stretch sm:items-start relative shrink-0 w-full" data-name="hud-values">
-      <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-px p-[24px] relative" data-name="highest-bid-hud">
+    <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-stretch relative shrink-0 w-full" data-name="hud-values">
+      <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-center justify-center text-center min-w-px p-[24px] relative" data-name="highest-bid-hud">
         <HudCorner />
         <HudCorner3 />
         <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">
@@ -156,7 +156,7 @@ function HudValues({ data }: { data: LobbyAuctionData }) {
           {data.currentBidderName ? `HELD BY // ${data.currentBidderName}` : "NO BIDS YET"}
         </p>
       </div>
-      <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-px p-[24px] relative" data-name="timer-hud">
+      <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-center justify-center text-center min-w-px p-[24px] relative" data-name="timer-hud">
         <HudCorner1 />
         <HudCorner2 />
         <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">

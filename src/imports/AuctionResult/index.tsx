@@ -48,7 +48,7 @@ function HudCorners({ color }: { color: string }) {
 
 function StatBox({ label, value, color = "#e0e0e0" }: { label: string; value: string; color?: string }) {
   return (
-    <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-px p-[18px] relative">
+    <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[4px] items-center justify-center text-center min-w-px p-[18px] relative">
       <HudCorners color="#ffb000" />
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[10px] uppercase whitespace-nowrap">
         {label}
@@ -91,7 +91,7 @@ export default function AuctionResult(props: AuctionResultProps) {
       />
 
       {props.status === "won" ? (
-        <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-stretch sm:items-start relative shrink-0 w-full max-w-[680px]" data-name="stats-panel-row">
+        <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-stretch relative shrink-0 w-full max-w-[680px]" data-name="stats-panel-row">
           <StatBox label="FINAL WINNING BID" value={formatBalance(props.stats.finalBid)} color="#ffb000" />
           <StatBox label="TRANS_LOG_DEPTH" value={`${props.stats.totalBids} BIDS`} color="#fff" />
           <StatBox label="COMPETING NODES" value={`${props.stats.participants} OPERATORS`} color="#fff" />
