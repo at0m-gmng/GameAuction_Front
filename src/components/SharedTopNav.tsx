@@ -29,29 +29,30 @@ export function SharedTopNav({
   ];
 
   return (
+    // Mobile: flex-wrap — логотип+действия в первой строке, навигация центрируется во второй.
+    // sm+: flex-nowrap, боковые группы flex-1 → навигация ровно по центру (эквивалент 1fr auto 1fr).
     <div
+      className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3 sm:flex-nowrap sm:px-12 sm:py-0 sm:h-20"
       style={{
         background: "#121212",
-        height: 80,
-        display: "grid",
-        gridTemplateColumns: "1fr auto 1fr",
-        alignItems: "center",
-        padding: "0 48px",
         borderBottom: "1px solid #ffb000",
         flexShrink: 0,
         position: "relative",
         zIndex: 10,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 12, justifySelf: "start" }}>
-        <div style={{ width: 24, height: 24, background: "#ffb000", border: "1px solid #d4af37", borderRadius: 2 }} />
-        <span style={{ fontFamily: "'Unbounded:ExtraBold', sans-serif", fontWeight: 800, fontSize: 16, color: "#ffb000" }}>
+      <div className="order-1 sm:flex-1" style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+        <div style={{ width: 24, height: 24, background: "#ffb000", border: "1px solid #d4af37", borderRadius: 2, flexShrink: 0 }} />
+        <span
+          className="text-[13px] sm:text-[16px]"
+          style={{ fontFamily: "'Unbounded:ExtraBold', sans-serif", fontWeight: 800, color: "#ffb000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+        >
           NEXUS EXCHANGE
         </span>
       </div>
 
       {!minimal && (
-        <div style={{ display: "flex", gap: 40, alignItems: "center", justifySelf: "center" }}>
+        <div className="order-3 w-full justify-center gap-6 sm:order-2 sm:w-auto sm:gap-10" style={{ display: "flex", alignItems: "center" }}>
           {navItems.map(({ label, page }) => (
             <button
               key={page}
@@ -86,7 +87,7 @@ export function SharedTopNav({
       )}
 
       {!minimal && (
-        <div style={{ display: "flex", gap: 24, alignItems: "center", justifySelf: "end" }}>
+        <div className="order-2 gap-3 sm:order-3 sm:flex-1 sm:justify-end sm:gap-6" style={{ display: "flex", alignItems: "center" }}>
           {isLoggedIn && (
             <div
               style={{
@@ -96,6 +97,7 @@ export function SharedTopNav({
                 padding: "6px 12px",
                 display: "flex",
                 gap: 8,
+                flexShrink: 0,
               }}
             >
               <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#888" }}>BAL //</span>
@@ -114,6 +116,7 @@ export function SharedTopNav({
                 padding: "8px 14px",
                 cursor: "pointer",
                 outline: "none",
+                flexShrink: 0,
               }}
             >
               <span style={{ fontFamily: "'Geist Mono:Bold', sans-serif", fontWeight: 700, fontSize: 10, color: "#ff6060", letterSpacing: 1 }}>

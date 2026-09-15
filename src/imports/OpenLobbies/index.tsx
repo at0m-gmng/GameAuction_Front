@@ -23,8 +23,8 @@ function TitleHeader() {
         <span className="text-[#888]">{">"}</span>
         <span className="text-[#ffb000]">AUCTIONS</span>
       </div>
-      <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[28px] whitespace-nowrap">AUCTIONS</p>
-      <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#e0e0e0] text-[14px] whitespace-nowrap">Join players in real time and bid for high-grade cybernetic salvage.</p>
+      <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[24px] sm:text-[28px] whitespace-nowrap">AUCTIONS</p>
+      <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#e0e0e0] text-[14px]">Join players in real time and bid for high-grade cybernetic salvage.</p>
     </div>
   );
 }
@@ -52,7 +52,7 @@ function FilterTab({ label, active, onClick }: { label: string; active: boolean;
 // Backend LobbyStatus: Gathering=100, Bidding=200, Completed=300.
 function TabsRow({ active, onSelect }: { active: StatusFilter; onSelect: (f: StatusFilter) => void }) {
   return (
-    <div className="content-stretch flex gap-[12px] items-start justify-center relative shrink-0 w-full" data-name="tabs-row">
+    <div className="content-stretch flex flex-wrap gap-[12px] items-start justify-center relative shrink-0 w-full" data-name="tabs-row">
       <FilterTab label="ALL" active={active === "all"} onClick={() => onSelect("all")} />
       <FilterTab label="COLLECTING" active={active === 100} onClick={() => onSelect(100)} />
       <FilterTab label="LIVE" active={active === 200} onClick={() => onSelect(200)} />
@@ -63,7 +63,7 @@ function TabsRow({ active, onSelect }: { active: StatusFilter; onSelect: (f: Sta
 
 function TableHeader() {
   return (
-    <div className="bg-[#181818] content-stretch flex gap-[24px] items-start p-[16px] relative shrink-0 w-full" data-name="table-header">
+    <div className="bg-[#181818] content-stretch hidden xl:flex gap-[24px] items-start p-[16px] relative shrink-0 w-full" data-name="table-header">
       <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
       <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#888] text-[11px] w-[320px]">ITEM NAME</p>
       <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#888] text-[11px] w-[140px]">PARTICIPANTS</p>
@@ -77,7 +77,7 @@ function TableHeader() {
 
 function ColItem({ name, imageUrl }: { name: string; imageUrl: string | null }) {
   return (
-    <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-[320px]" data-name="col-item">
+    <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-full xl:w-[320px]" data-name="col-item">
       <div className="relative rounded-[4px] shrink-0 size-[64px] bg-[#181818] flex items-center justify-center" data-name="thumb">
         {imageUrl ? (
           <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none rounded-[4px] size-full" src={imageUrl} />
@@ -111,7 +111,7 @@ function ColSlots({ status, slotsTaken, maxSlots, bidderCount }: { status: numbe
   // NOTE: у завершённого аукциона показываем не слоты лобби, а число игроков, сделавших ставки.
   if (status === 300) {
     return (
-      <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
+      <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-full xl:w-[140px]" data-name="col-slots">
         <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">
           {`BIDDERS: ${bidderCount}`}
         </p>
@@ -120,7 +120,7 @@ function ColSlots({ status, slotsTaken, maxSlots, bidderCount }: { status: numbe
   }
 
   return (
-    <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-[140px]" data-name="col-slots">
+    <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-full xl:w-[140px]" data-name="col-slots">
       <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#888] text-[11px] whitespace-nowrap">
         {`SLOTS: ${slotsTaken}/${maxSlots}`}
       </p>
@@ -132,7 +132,7 @@ function ColSlots({ status, slotsTaken, maxSlots, bidderCount }: { status: numbe
 function ColStatus({ status }: { status: number }) {
   const { color, background } = lobbyStatusColors(status);
   return (
-    <div className="content-stretch flex items-start relative shrink-0 w-[160px]" data-name="col-status">
+    <div className="content-stretch flex items-start relative shrink-0 w-full xl:w-[160px]" data-name="col-status">
       <div className="content-stretch flex items-start px-[10px] py-[4px] relative rounded-[2px] shrink-0" style={{ background }} data-name="status-badge">
         <div aria-hidden className="absolute border border-solid inset-0 pointer-events-none rounded-[2px]" style={{ borderColor: color }} />
         <p className="[word-break:break-word] font-['Geist_Mono:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[11px] whitespace-nowrap" style={{ color }}>
@@ -145,7 +145,7 @@ function ColStatus({ status }: { status: number }) {
 
 function ColBid({ currentBid }: { currentBid: number }) {
   return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-bid">
+    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-full xl:w-[180px] whitespace-nowrap" data-name="col-bid">
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">CURRENT BID</p>
       <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[#ffb000] text-[15px]">{formatBalance(currentBid)}</p>
     </div>
@@ -155,7 +155,7 @@ function ColBid({ currentBid }: { currentBid: number }) {
 function ColTimer({ status, endsAt }: { status: number; endsAt: string | null }) {
   const label = status === 300 ? "COMPLETED" : formatTimeLeft(endsAt);
   return (
-    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-[180px] whitespace-nowrap" data-name="col-timer">
+    <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[normal] relative shrink-0 w-full xl:w-[180px] whitespace-nowrap" data-name="col-timer">
       <p className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px]">TIME LEFT</p>
       <p className="font-['Geist_Mono:Bold',sans-serif] font-bold relative shrink-0 text-[15px] text-white">{label}</p>
     </div>
@@ -165,11 +165,11 @@ function ColTimer({ status, endsAt }: { status: number; endsAt: string | null })
 function ColAction({ status, onEnter }: { status: number; onEnter?: () => void }) {
   const isLive = status === 200;
   return (
-    <div className="content-stretch flex flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
+    <div className="content-stretch flex w-full xl:flex-[1_0_0] items-start justify-end min-w-px relative" data-name="col-action">
       <button
         type="button"
         onClick={onEnter}
-        className="content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0 cursor-pointer"
+        className="content-stretch flex items-center justify-center px-[28px] py-[14px] relative shrink-0 cursor-pointer w-full xl:w-auto"
         style={{ background: isLive ? "#ffb000" : "rgba(0,0,0,0)" }}
         data-name="button-terminal"
       >
@@ -187,7 +187,7 @@ function ColAction({ status, onEnter }: { status: number; onEnter?: () => void }
 
 function LobbyRow({ lobby, onEnterLobby }: { lobby: LobbyListItem; onEnterLobby?: (lobbyId: string) => void }) {
   return (
-    <div className="bg-[#121212] content-stretch flex gap-[24px] items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
+    <div className="bg-[#121212] content-stretch flex flex-col gap-3 xl:flex-row xl:gap-[24px] xl:items-center p-[16px] relative shrink-0 w-full" data-name="lobby-row">
       <div aria-hidden className="absolute border-[#2a2a2a] border-b border-solid inset-0 pointer-events-none" />
       <ColItem name={lobby.itemName} imageUrl={lobby.itemImageUrl} />
       <ColSlots status={lobby.status} slotsTaken={lobby.slotsTaken} maxSlots={lobby.maxSlots} bidderCount={lobby.bidderCount} />
@@ -260,7 +260,7 @@ export default function OpenLobbies({
 
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative size-full" data-name="open-lobbies">
-      <div className="content-stretch flex flex-col gap-[24px] items-start p-[48px] relative shrink-0 w-full" data-name="lobbies-body">
+      <div className="content-stretch flex flex-col gap-[24px] items-start p-4 sm:p-8 xl:p-[48px] relative shrink-0 w-full" data-name="lobbies-body">
         <TitleHeader />
         <TabsRow active={activeFilter} onSelect={setActiveFilter} />
         <LobbiesTable lobbies={visible} isLoading={isLoading} allEmpty={lobbies.length === 0} onEnterLobby={onEnterLobby} />

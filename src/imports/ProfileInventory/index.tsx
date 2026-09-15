@@ -94,9 +94,9 @@ function Tagline({ memberSinceLabel }: { memberSinceLabel: string }) {
 
 function IdentityBlock({ data }: { data: ProfileData }) {
   return (
-    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-px relative" data-name="identity-block">
+    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-px relative w-full" data-name="identity-block">
       <Tagline memberSinceLabel={data.memberSinceLabel} />
-      <p className="[word-break:break-word] font-['Unbounded:Black',sans-serif] font-black leading-[normal] relative shrink-0 text-[24px] text-white whitespace-nowrap">{data.nickname}</p>
+      <p className="[word-break:break-word] font-['Unbounded:Black',sans-serif] font-black leading-[normal] relative text-[24px] text-white w-full truncate">{data.nickname}</p>
     </div>
   );
 }
@@ -133,7 +133,7 @@ function StatBlockContainer({ data }: { data: ProfileData }) {
   const winRate = totalGames > 0 ? Math.round((data.totalWins / totalGames) * 100) : 0;
 
   return (
-    <div className="[word-break:break-word] content-stretch flex gap-[48px] items-start leading-[normal] relative shrink-0 whitespace-nowrap" data-name="stat-block-container">
+    <div className="[word-break:break-word] content-stretch flex flex-wrap gap-8 md:gap-[48px] items-start leading-[normal] relative shrink-0 whitespace-nowrap" data-name="stat-block-container">
       <Stat wins={data.totalWins} />
       <Stat1 losses={data.totalLosses} />
       <Stat2 winRate={winRate} />
@@ -143,7 +143,7 @@ function StatBlockContainer({ data }: { data: ProfileData }) {
 
 function OperatorDetails({ data }: { data: ProfileData }) {
   return (
-    <div className="content-stretch flex gap-[32px] items-center relative shrink-0 w-full" data-name="operator-details">
+    <div className="content-stretch flex flex-col gap-6 md:flex-row md:gap-[32px] md:items-center relative shrink-0 w-full" data-name="operator-details">
       <AvatarHexFrame />
       <IdentityBlock data={data} />
       <StatBlockContainer data={data} />
@@ -153,7 +153,7 @@ function OperatorDetails({ data }: { data: ProfileData }) {
 
 function ProfileSummary({ data }: { data: ProfileData }) {
   return (
-    <div className="bg-[#121212] content-stretch flex flex-col gap-[24px] items-start p-[32px] relative shrink-0 w-full" data-name="profile-summary">
+    <div className="bg-[#121212] content-stretch flex flex-col gap-[24px] items-start p-5 sm:p-[32px] relative shrink-0 w-full" data-name="profile-summary">
       <div aria-hidden className="absolute border border-[rgba(212,175,55,0.25)] border-solid inset-0 pointer-events-none" />
       <HudCorner />
       <HudCorner1 />
@@ -194,7 +194,7 @@ function SortingTabs({
   onSelect: (f: CategoryFilter) => void;
 }) {
   return (
-    <div className="content-stretch flex gap-[12px] items-start relative shrink-0" data-name="sorting-tabs">
+    <div className="content-stretch flex flex-wrap gap-[12px] items-start relative shrink-0" data-name="sorting-tabs">
       <FilterTab label="ALL" active={active === "all"} onClick={() => onSelect("all")} />
       {categories.map((category) => (
         <FilterTab
@@ -220,7 +220,7 @@ function FilterHeader({
   onSelect: (f: CategoryFilter) => void;
 }) {
   return (
-    <div className="content-stretch flex items-center justify-between relative shrink-0 w-full" data-name="filter-header">
+    <div className="content-stretch flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between relative shrink-0 w-full" data-name="filter-header">
       <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[16px] whitespace-nowrap">
         {`EQUIPPED SALVAGE (${itemCount} ${itemCount === 1 ? "ITEM" : "ITEMS"})`}
       </p>
@@ -373,7 +373,7 @@ function HistoryRow({ entry }: { entry: AuctionHistoryItem }) {
 
 function HistoryColumn({ history }: { history: AuctionHistoryItem[] }) {
   return (
-    <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-[420px]" data-name="history-column">
+    <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full lg:w-[420px]" data-name="history-column">
       <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#ffb000] text-[16px] whitespace-nowrap">AUCTION HISTORY</p>
       {history.length === 0 ? (
         <div className="bg-[#121212] border border-[#2a2a2a] border-solid flex items-center justify-center w-full" style={{ minHeight: 120, padding: 32 }}>
@@ -473,7 +473,7 @@ function SplitLayoutRow({
   onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
-    <div className="content-stretch flex gap-[32px] items-start relative shrink-0 w-full" data-name="split-layout-row">
+    <div className="content-stretch flex flex-col gap-6 lg:flex-row lg:gap-[32px] items-start relative shrink-0 w-full" data-name="split-layout-row">
       <InventoryColumn items={inventory} isLoading={isInventoryLoading} onSelectItem={onSelectItem} />
       <HistoryColumn history={history} />
     </div>
@@ -500,7 +500,7 @@ function ProfileBody({
   onSelectItem?: (item: ProfileInventoryItem) => void;
 }) {
   return (
-    <div className="content-stretch flex flex-col gap-[32px] items-start p-[48px] relative shrink-0 w-full" data-name="profile-body">
+    <div className="content-stretch flex flex-col gap-[32px] items-start p-4 sm:p-8 lg:p-[48px] relative shrink-0 w-full" data-name="profile-body">
       <ProfileSummary data={data} />
       <ActiveListingsSection listings={listings} onWithdraw={onWithdrawListing} withdrawingItemId={withdrawingItemId} />
       <SplitLayoutRow inventory={inventory} isInventoryLoading={isInventoryLoading} history={history} onSelectItem={onSelectItem} />

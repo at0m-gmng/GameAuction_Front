@@ -78,11 +78,11 @@ function AllHudCorners() {
 
 function StatusBanner({ data }: { data: LobbyAuctionData }) {
   return (
-    <div className="bg-[#181818] border-[#2a2a2a] border-b border-solid content-stretch flex h-[56px] items-center justify-between px-[48px] relative shrink-0 w-full" data-name="lobby-status-banner">
-      <div className="content-stretch flex gap-[12px] items-center relative shrink-0" data-name="lobby-id-group">
+    <div className="bg-[#181818] border-[#2a2a2a] border-b border-solid content-stretch flex flex-wrap gap-x-4 gap-y-2 h-auto sm:h-[56px] items-center justify-between px-4 py-2 sm:px-[48px] sm:py-0 relative shrink-0 w-full" data-name="lobby-status-banner">
+      <div className="content-stretch flex flex-wrap gap-[12px] items-center relative min-w-0" data-name="lobby-id-group">
         <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap">{`AUCTION ID: // ${data.lobbyCode}`}</p>
-        <div className="bg-[#2a2a2a] h-[16px] relative shrink-0 w-px" />
-        <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[12px] text-white whitespace-nowrap">
+        <div className="bg-[#2a2a2a] h-[16px] relative shrink-0 w-px hidden sm:block" />
+        <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative min-w-0 text-[12px] text-white">
           {`ITEM: ${data.itemName.toUpperCase()}`}
         </p>
       </div>
@@ -100,7 +100,7 @@ function ShowcasePanel({ data }: { data: LobbyAuctionData }) {
   const { color: rarityColor, background: rarityBackground } = rarityColors(data.itemRarity);
 
   return (
-    <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-[400px]" data-name="showcase-panel">
+    <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full xl:w-[400px]" data-name="showcase-panel">
       <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-col h-[360px] items-center justify-center overflow-clip relative shrink-0 w-full" data-name="image-wrap">
         <AllHudCorners />
         <div className="flex-[1_0_0] min-h-px relative w-full">
@@ -142,7 +142,7 @@ function ShowcasePanel({ data }: { data: LobbyAuctionData }) {
 
 function HudValues({ data }: { data: LobbyAuctionData }) {
   return (
-    <div className="content-stretch flex gap-[24px] items-start relative shrink-0 w-full" data-name="hud-values">
+    <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-start relative shrink-0 w-full" data-name="hud-values">
       <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-px p-[24px] relative" data-name="highest-bid-hud">
         <HudCorner />
         <HudCorner3 />
@@ -218,7 +218,7 @@ function BidController({
   return (
     <div className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-col gap-[20px] items-start p-[24px] relative shrink-0 w-full" data-name="bid-controller">
       <AllHudCorners />
-      <div className="content-stretch flex gap-[16px] items-center relative shrink-0 w-full" data-name="control-inputs">
+      <div className="content-stretch flex flex-wrap gap-4 sm:gap-[16px] items-center relative shrink-0 w-full" data-name="control-inputs">
         <div
           className="bg-black border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex flex-[1_0_0] items-center justify-between min-w-px px-[16px] py-[12px] relative"
           data-name="bid-input"
@@ -232,7 +232,7 @@ function BidController({
           />
           <p className="relative shrink-0 text-[#888] text-[12px]">₵</p>
         </div>
-        <div className="content-stretch flex gap-[8px] items-start relative shrink-0" data-name="fast-keys">
+        <div className="content-stretch flex flex-wrap gap-[8px] items-start relative shrink-0" data-name="fast-keys">
           {quickBidAmounts.map((amount) => (
             <button
               key={amount}
@@ -262,7 +262,7 @@ function BidController({
 
 function RightSlotsPanel({ players, maxParticipants }: { players: AuctionPlayerSlot[]; maxParticipants: number }) {
   return (
-    <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-[320px]" data-name="right-slots-panel">
+    <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full xl:w-[320px]" data-name="right-slots-panel">
       <p className="[word-break:break-word] font-['Unbounded:Bold',sans-serif] font-bold leading-[normal] relative shrink-0 text-[#888] text-[12px] whitespace-nowrap">
         {`CONNECTED OPERATORS (${players.length}/${maxParticipants})`}
       </p>
@@ -315,7 +315,7 @@ export default function LobbyAuction({
   return (
     <div className="bg-[#0a0a0a] content-stretch flex flex-col items-start relative w-full" data-name="lobby-auction">
       <StatusBanner data={data} />
-      <div className="content-stretch flex gap-[24px] items-start p-[48px] relative shrink-0 w-full" data-name="live-grid">
+      <div className="content-stretch flex flex-col gap-6 xl:flex-row xl:gap-[24px] items-start p-4 sm:p-8 xl:p-[48px] relative shrink-0 w-full" data-name="live-grid">
         <ShowcasePanel data={data} />
         <div className="content-stretch flex flex-[1_0_0] flex-col gap-[24px] items-start min-w-px relative" data-name="center-bid-console">
           <HudValues data={data} />

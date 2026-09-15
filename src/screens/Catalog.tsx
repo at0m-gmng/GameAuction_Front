@@ -80,17 +80,17 @@ export function InteractiveCatalog({ onNavigate, onEnterLobby }: { onNavigate: (
     <div style={{ width: "100%", minHeight: "100%", background: "#0a0a0a", display: "flex", flexDirection: "column" }}>
       <SharedTopNav active="catalog" onNavigate={onNavigate} />
 
-      <div style={{ padding: 48, display: "flex", flexDirection: "column", gap: 24 }}>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+      <div className="p-4 sm:p-12" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "flex", gap: 8, alignItems: "center", fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11 }}>
               <span style={{ color: "#888" }}>NEXUS</span>
               <span style={{ color: "#888" }}>{">"}</span>
               <span style={{ color: "#ffb000" }}>CATALOG</span>
             </div>
-            <p style={{ fontFamily: "'Unbounded:ExtraBold', sans-serif", fontWeight: 800, fontSize: 28, color: "#ffb000" }}>MARKET CATALOG</p>
+            <p className="text-[22px] sm:text-[28px]" style={{ fontFamily: "'Unbounded:ExtraBold', sans-serif", fontWeight: 800, color: "#ffb000" }}>MARKET CATALOG</p>
           </div>
-          <div style={{ width: 360, background: "#121212", border: "1px solid rgba(212,175,55,0.25)", display: "flex", alignItems: "center", gap: 12, padding: "10px 16px" }}>
+          <div className="w-full sm:w-[360px]" style={{ background: "#121212", border: "1px solid rgba(212,175,55,0.25)", display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", boxSizing: "border-box" }}>
             <input
               type="text"
               placeholder="Search catalog / systems..."
@@ -101,7 +101,7 @@ export function InteractiveCatalog({ onNavigate, onEnterLobby }: { onNavigate: (
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -135,7 +135,8 @@ export function InteractiveCatalog({ onNavigate, onEnterLobby }: { onNavigate: (
                   setStartError(null);
                   setSelected(item);
                 }}
-                style={{ background: "#121212", border: "1px solid #2a2a2a", display: "flex", flexDirection: "column", width: 280, flexShrink: 0, padding: 0, cursor: "pointer", textAlign: "left" }}
+                className="w-full max-w-[320px] sm:w-[280px] sm:max-w-none"
+                style={{ background: "#121212", border: "1px solid #2a2a2a", display: "flex", flexDirection: "column", flexShrink: 0, padding: 0, cursor: "pointer", textAlign: "left" }}
               >
                 <div style={{ height: 200, overflow: "hidden", position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {item.imageUrl ? (

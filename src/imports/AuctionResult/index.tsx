@@ -70,8 +70,8 @@ export default function AuctionResult(props: AuctionResultProps) {
   const statusColor = isWon ? "#ffb000" : "#f33";
 
   return (
-    <div className="bg-[#0a0a0a] content-stretch flex flex-col gap-[40px] items-center justify-center px-[48px] py-[80px] relative w-full" data-name="auction-result">
-      <div className="content-stretch flex gap-[12px] items-center relative shrink-0" data-name="system-status-indicator">
+    <div className="bg-[#0a0a0a] content-stretch flex flex-col gap-8 sm:gap-[40px] items-center justify-center px-4 py-12 sm:px-[48px] sm:py-[80px] relative w-full" data-name="auction-result">
+      <div className="content-stretch flex flex-wrap gap-x-[12px] gap-y-1 items-center justify-center text-center relative max-w-full" data-name="system-status-indicator">
         <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[12px] whitespace-nowrap" style={{ color: statusColor }}>
           {isWon ? "[TRANS_SUCCESS: INVENTORY_LINK_SECURED]" : "[TRANS_FAILURE: ACCESS_DENIED // OUTBID]"}
         </p>
@@ -91,14 +91,14 @@ export default function AuctionResult(props: AuctionResultProps) {
       />
 
       {props.status === "won" ? (
-        <div className="content-stretch flex gap-[24px] items-start relative shrink-0 w-[680px]" data-name="stats-panel-row">
+        <div className="content-stretch flex flex-col gap-4 sm:flex-row sm:gap-[24px] items-start relative shrink-0 w-full max-w-[680px]" data-name="stats-panel-row">
           <StatBox label="FINAL WINNING BID" value={formatBalance(props.stats.finalBid)} color="#ffb000" />
           <StatBox label="TRANS_LOG_DEPTH" value={`${props.stats.totalBids} BIDS`} color="#fff" />
           <StatBox label="COMPETING NODES" value={`${props.stats.participants} OPERATORS`} color="#fff" />
         </div>
       ) : (
         <div
-          className="bg-[#121212] border-solid content-stretch flex flex-col gap-[16px] items-start p-[24px] relative shrink-0 w-[680px]"
+          className="bg-[#121212] border-solid content-stretch flex flex-col gap-[16px] items-start p-[24px] relative shrink-0 w-full max-w-[680px]"
           style={{ borderWidth: 1, borderColor: "rgba(138,15,15,0.19)" }}
           data-name="comparison-panel"
         >

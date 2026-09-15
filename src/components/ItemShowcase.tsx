@@ -90,8 +90,8 @@ export function ItemShowcase({
   return (
     <>
       <div
-        className="content-stretch flex flex-col items-center justify-center relative shrink-0"
-        style={{ height: d.showcaseSize, width: d.showcaseSize * 2.125, ...(s.dimmed ? { opacity: 0.6 } : {}) }}
+        className="content-stretch flex flex-col items-center justify-center relative shrink-0 overflow-clip"
+        style={{ height: d.showcaseSize, width: d.showcaseSize * 2.125, maxWidth: "100%", ...(s.dimmed ? { opacity: 0.6 } : {}) }}
         data-name="result-showcase"
       >
         <div
@@ -125,7 +125,7 @@ export function ItemShowcase({
 
       <div
         className="content-stretch flex flex-col gap-[12px] items-center relative shrink-0"
-        style={{ width: d.headerWidth }}
+        style={{ width: d.headerWidth, maxWidth: "100%" }}
         data-name="result-header"
       >
         <div

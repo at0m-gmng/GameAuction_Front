@@ -45,7 +45,7 @@ export default function StartAuction({
       data-name="start-auction-overlay"
     >
       <div
-        className="bg-[#0a0a0a] border border-[#2a2a2a] border-solid content-stretch flex flex-col gap-[20px] items-center px-[40px] py-[32px] relative max-h-[95vh] overflow-y-auto"
+        className="bg-[#0a0a0a] border border-[#2a2a2a] border-solid content-stretch flex flex-col gap-[20px] items-center px-[20px] py-[32px] sm:px-[40px] relative w-full max-w-[560px] max-h-[95vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         data-name="start-auction-panel"
       >
@@ -58,7 +58,7 @@ export default function StartAuction({
           ×
         </button>
 
-        <div className="content-stretch flex gap-[12px] items-center relative shrink-0" data-name="system-status-indicator">
+        <div className="content-stretch flex flex-wrap gap-x-[12px] gap-y-1 items-center justify-center text-center relative max-w-full" data-name="system-status-indicator">
           <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#ffb000] text-[12px] whitespace-nowrap">
             [LOT_READY: AUCTION_UPLINK_OPEN]
           </p>
@@ -78,7 +78,7 @@ export default function StartAuction({
         />
 
         <div
-          className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex items-center justify-between p-[16px] relative shrink-0 w-[480px]"
+          className="bg-[#121212] border border-[rgba(212,175,55,0.25)] border-solid content-stretch flex items-center justify-between p-[16px] relative shrink-0 w-full sm:w-[480px]"
           data-name="starting-price-panel"
         >
           <span className="font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#888] text-[11px] uppercase">
@@ -90,7 +90,7 @@ export default function StartAuction({
         </div>
 
         {errorMessage && (
-          <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#f33] text-[12px] text-center w-[480px] -mt-[10px]">
+          <p className="[word-break:break-word] font-['Geist_Mono:Regular',sans-serif] font-normal relative shrink-0 text-[#f33] text-[12px] text-center w-full sm:w-[480px] -mt-[10px]">
             {errorMessage}
           </p>
         )}
@@ -99,7 +99,7 @@ export default function StartAuction({
           type="button"
           onClick={onStart}
           disabled={isSubmitting}
-          className="bg-[#ffb000] content-stretch flex items-center justify-center py-[14px] relative shrink-0 w-[480px] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-[#ffb000] content-stretch flex items-center justify-center py-[14px] relative shrink-0 w-full sm:w-[480px] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         >
           <p className="[word-break:break-word] font-['Unbounded:ExtraBold',sans-serif] font-extrabold leading-[normal] relative shrink-0 text-[#0a0a0a] text-[14px] uppercase whitespace-nowrap">
             {isSubmitting ? "STARTING..." : "START AUCTION"}
