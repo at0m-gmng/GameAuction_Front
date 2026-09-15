@@ -217,6 +217,57 @@ function TableBody({ lobbies, onEnterLobby }: { lobbies: LobbyListItem[]; onEnte
   );
 }
 
+// Мобилки и планшеты (< xl): вертикальная плитка в стиле карточки каталога —
+// картинка сверху, затем статус, название, цена/таймер, участники и футер-действие.
+function LobbyTile({ lobby, onEnterLobby }: { lobby: LobbyListItem; onEnterLobby?: (lobbyId: string) => void }) {
+  const { color, background } = lobbyStatusColors(lobby.status);
+  const timerLabel = lobby.status === 300 ? "COMPLETED" : formatTimeLeft(lobby.endsAt);
+  const participantsLabel = lobby.status === 300 ? `BIDDERS: ${lobby.bidderCount}` : `SLOTS: ${lobby.slotsTaken}/${lobby.maxSlots}`;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onEnterLobby?.(lobby.id)}
+      className="w-full max-w-[320px] sm:w-[280px] sm:max-w-none"
+      style={{ background: "#121212", border: "1px solid #2a2a2a", display: "flex", flexDirection: "column", flexShrink: 0, padding: 0, cursor: "pointer", textAlign: "left" }}
+      data-name="lobby-tile"
+    >
+      <div style={{ height: 200, overflow: "hidden", position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {lobby.itemImageUrl ? (
+          <img src={lobby.itemImageUrl} alt={lobby.itemName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#444" }}>NO IMAGE</span>
+        )}
+      </div>
+      <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+        <div style={{ background, border: `1px solid ${color}`, borderRadius: 2, padding: "4px 8px", alignSelf: "flex-start" }}>
+          <span style={{ fontFamily: "'Geist Mono:Bold', sans-serif", fontWeight: 700, fontSize: 10, color, textTransform: "uppercase" }}>
+            {formatLobbyStatusLabel(lobby.status)}
+          </span>
+        </div>
+        <p style={{ fontFamily: "'Unbounded:Bold', sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {lobby.itemName}
+        </p>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#888" }}>CURRENT BID</span>
+            <span style={{ fontFamily: "'Geist Mono:Bold', sans-serif", fontWeight: 700, fontSize: 15, color: "#ffb000" }}>{formatBalance(lobby.currentBid)}</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end", textAlign: "right" }}>
+            <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#888" }}>TIME LEFT</span>
+            <span style={{ fontFamily: "'Geist Mono:Bold', sans-serif", fontWeight: 700, fontSize: 15, color: "#fff" }}>{timerLabel}</span>
+          </div>
+        </div>
+        <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#888" }}>{participantsLabel}</span>
+        <div style={{ borderTop: "1px solid rgba(212,175,55,0.25)", paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontFamily: "'Unbounded:Bold', sans-serif", fontWeight: 700, fontSize: 11, color: "#ffb000" }}>ENTER AUCTION</span>
+          <span style={{ fontFamily: "'Geist Mono:Regular', sans-serif", fontSize: 11, color: "#ffb000" }}>→</span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
 function LobbiesTable({
   lobbies,
   isLoading,
@@ -228,19 +279,38 @@ function LobbiesTable({
   allEmpty: boolean;
   onEnterLobby?: (lobbyId: string) => void;
 }) {
+  const emptyLabel = isLoading
+    ? "LOADING AUCTIONS..."
+    : allEmpty
+      ? "NO AUCTIONS YET"
+      : lobbies.length === 0
+        ? "NO AUCTIONS IN THIS STATUS"
+        : null;
+
+  if (emptyLabel) {
+    return (
+      <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-name="lobbies-table">
+        <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
+        <TableHeader />
+        <EmptyState label={emptyLabel} />
+      </div>
+    );
+  }
+
   return (
-    <div className="content-stretch flex flex-col items-start relative shrink-0 w-full" data-name="lobbies-table">
-      <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
-      <TableHeader />
-      {isLoading ? (
-        <EmptyState label="LOADING AUCTIONS..." />
-      ) : allEmpty ? (
-        <EmptyState label="NO AUCTIONS YET" />
-      ) : lobbies.length === 0 ? (
-        <EmptyState label="NO AUCTIONS IN THIS STATUS" />
-      ) : (
+    <div className="w-full" data-name="lobbies-table">
+      {/* Мобилки + планшеты: сетка плиток */}
+      <div className="flex flex-wrap justify-center gap-6 w-full xl:hidden" data-name="lobby-tiles">
+        {lobbies.map((lobby) => (
+          <LobbyTile key={lobby.id} lobby={lobby} onEnterLobby={onEnterLobby} />
+        ))}
+      </div>
+      {/* Десктоп: таблица */}
+      <div className="hidden xl:flex xl:flex-col items-start relative w-full">
+        <div aria-hidden className="absolute border border-[#2a2a2a] border-solid inset-0 pointer-events-none" />
+        <TableHeader />
         <TableBody lobbies={lobbies} onEnterLobby={onEnterLobby} />
-      )}
+      </div>
     </div>
   );
 }
